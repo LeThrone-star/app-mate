@@ -385,5 +385,4 @@
     update();
   })();
 
-  App.setupTabs(document.getElementById('tabs'));
 })();

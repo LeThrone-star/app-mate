@@ -28,6 +28,13 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap">
   <link rel="stylesheet" href="assets/style.css">
   <style>
+    .tabs { flex-direction: column; gap: 8px; }
+    .tab-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .tab-label { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); min-width: 190px; }
+    @media (max-width: 640px) { .tab-label { min-width: 0; width: 100%; } .tabs button { padding: 6px 12px; font-size: .9rem; } }
+    .chk-col { display: flex; flex-direction: column; gap: 6px; }
+    .chk-col label { display: flex; gap: 8px; align-items: center; cursor: pointer; }
+    #sis-steps .katex-display, #con-eq .katex-display { margin: .3em 0; overflow-x: auto; overflow-y: hidden; }
     .chk { display: flex; gap: 14px; flex-wrap: wrap; font-size: .9rem; }
     .chk label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
     .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; }
@@ -39,7 +46,7 @@
   <main class="container">
     <span class="tag math">Laboratorio</span>
     <h1 class="page-title">Laboratorio di Matematica</h1>
-    <p class="page-sub">Esplora i concetti muovendo gli slider: vedi come cambiano grafici, valori e formule in tempo reale. Nei grafici puoi trascinare e usare la rotellina per lo zoom.</p>
+    <p class="page-sub">Tredici laboratori sul programma di matematica del liceo: algebra, geometria, trigonometria, analisi, statistica e probabilità. Muovi gli slider e trascina i punti: grafici, valori e formule cambiano in tempo reale.</p>
 
     <div class="tabs" id="tabs">
       <button data-tab="goniometria">Circonferenza goniometrica</button>
@@ -154,5 +161,6 @@
   <script src="assets/parser.js"></script>
   <script src="assets/plot.js"></script>
   <script src="assets/mathlab.js"></script>
+  <script src="assets/mathlab2.js"></script>
 </body>
 </html>
