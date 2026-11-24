@@ -2,7 +2,7 @@
    Le pagine vengono salvate sul dispositivo: si aprono subito dalla copia
    salvata e intanto si scarica in sottofondo la versione nuova.
    Cambia VERSION a ogni aggiornamento del sito. */
-const VERSION = 'astral-v2';
+const VERSION = 'astral-v3';
 const CORE = [
   './', 'index.html', 'grafici.html', 'calcolatrice.html', 'matematica.html', 'fisica.html', 'teoria.html',
   'manifest.webmanifest',

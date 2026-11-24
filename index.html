@@ -98,6 +98,7 @@
     #tutor-text:focus { outline: 2px solid var(--math); outline-offset: 0; }
     .compose-row .btn { height: 42px; flex: none; }
     .tutor-photo { font-size: 1.15rem; padding: 0 12px; }
+    #tutor-note .btn { margin-left: 4px; vertical-align: middle; }
     #tutor-note { font-size: .86rem; color: var(--muted); padding: 8px 16px; background: var(--surface-2); border-top: 1px solid var(--border); }
     .tutor.off #tutor-note { color: var(--text); }
     .tutor-side { padding: 16px; display: flex; flex-direction: column; gap: 14px; background: var(--surface); font-size: .9rem; }
@@ -170,7 +171,7 @@
             <button class="btn tutor-photo" id="tutor-cam-btn" type="button" title="Scatta una foto" aria-label="Scatta una foto">📷</button>
             <button class="btn tutor-photo" id="tutor-gal-btn" type="button" title="Carica un'immagine" aria-label="Carica un'immagine">🖼</button>
             <input type="file" id="tutor-cam" accept="image/*" capture="environment" hidden>
-            <input type="file" id="tutor-gal" accept="image/*" multiple hidden>
+            <input type="file" id="tutor-gal" accept="image/*,.heic,.heif" multiple hidden>
             <textarea id="tutor-text" rows="1" placeholder="Scrivi il problema o una domanda…" aria-label="Domanda per il tutor"></textarea>
             <button class="btn primary" id="tutor-send" type="button">Invia</button>
             <button class="btn" id="tutor-stop" type="button" hidden>■ Ferma</button>

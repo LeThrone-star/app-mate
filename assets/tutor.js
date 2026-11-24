@@ -40,6 +40,8 @@ Regole:
 
   let sample = null;
   let maxImages = 0;
+  let maxBytes = 20e6;
+  let preparing = 0;
   let images = [];      // { file, url }
   let turns = [];       // { role, content }
   let ctl = null;
@@ -53,33 +55,96 @@ Regole:
     box.disabled = !ok; sendBtn.disabled = !ok;
     photoBtns.forEach(b => { b.disabled = !ok; });
   }
+  const CLAUDE_URL = 'https://claude.ai/artifact/LiJHn1eKDhNuFfhFTXkEEc';
+  function offerClaude(msg) {
+    setAvailable(false, '');
+    note.hidden = false;
+    note.textContent = msg + ' ';
+    const a = document.createElement('a');
+    a.href = CLAUDE_URL; a.target = '_blank'; a.rel = 'noopener';
+    a.className = 'btn small primary'; a.textContent = 'Apri il tutor su claude.ai';
+    note.appendChild(a);
+  }
   setAvailable(false, 'Sto collegando il tutor…');
   if (!window.claude || typeof window.claude.use !== 'function') {
-    setAvailable(false, 'Il tutor IA funziona quando apri Astral dentro claude.ai. Su questa copia del sito non è disponibile.');
+    offerClaude('Il tutor IA risponde solo dentro claude.ai: qui puoi aprirlo con un tocco.');
     return;
   }
   window.claude.use('sample').then(async s => {
-    if (!s) { setAvailable(false, 'Il tutor IA non è disponibile in questa visualizzazione. Apri Astral da claude.ai.'); return; }
+    if (!s) { offerClaude('Il tutor IA non è disponibile in questa visualizzazione.'); return; }
     sample = s;
     const lim = await s.limits().catch(() => null);
     if (lim && lim.images) {
       maxImages = lim.images.maxCount;
-      const acc = lim.images.mediaTypes.join(',');
-      camIn.accept = acc; galIn.accept = acc;
+      maxBytes = lim.images.maxInputBytes || maxBytes;
     } else {
       photoBtns.forEach(b => { b.hidden = true; });
     }
     setAvailable(true, '');
-  }).catch(() => setAvailable(false, 'Il tutor IA non è disponibile in questo momento.'));
+  }).catch(() => offerClaude('Il tutor IA non è disponibile in questo momento.'));
 
   /* ---------- Foto ---------- */
-  function addFiles(list) {
-    for (const f of list) {
-      if (!f.type.startsWith('image/')) continue;
-      if (images.length >= Math.max(1, maxImages)) { showToast(`Puoi allegare al massimo ${maxImages} foto per domanda.`); break; }
-      images.push({ file: f, url: URL.createObjectURL(f) });
+  const MAX_SIDE = 1800;
+  const looksLikeImage = f => (f.type && f.type.startsWith('image/')) || /\.(jpe?g|png|webp|gif|heic|heif|bmp)$/i.test(f.name || '');
+
+  /** Converte qualsiasi foto (anche HEIC dell'iPhone, se il telefono la sa leggere)
+   *  in un JPEG ridimensionato e dritto, il formato più sicuro per Claude. */
+  async function prepareImage(file) {
+    let src = null, w = 0, h = 0, url = null;
+    try {
+      src = await createImageBitmap(file, { imageOrientation: 'from-image' });
+      w = src.width; h = src.height;
+    } catch (e) {
+      url = URL.createObjectURL(file);
+      src = await new Promise((res, rej) => {
+        const im = new Image();
+        im.onload = () => res(im);
+        im.onerror = () => rej(new Error('decode'));
+        im.src = url;
+      });
+      w = src.naturalWidth; h = src.naturalHeight;
     }
-    renderPreviews();
+    try {
+      if (!w || !h) throw new Error('decode');
+      const k = Math.min(1, MAX_SIDE / Math.max(w, h));
+      const cw = Math.max(1, Math.round(w * k)), ch = Math.max(1, Math.round(h * k));
+      const c = document.createElement('canvas');
+      c.width = cw; c.height = ch;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cw, ch); // gli sfondi trasparenti diventano bianchi
+      ctx.drawImage(src, 0, 0, cw, ch);
+      let blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.86));
+      if (!blob) throw new Error('encode');
+      if (blob.size > maxBytes) blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.6));
+      return new File([blob], 'foto.jpg', { type: 'image/jpeg' });
+    } finally {
+      if (src && src.close) src.close();
+      if (url) URL.revokeObjectURL(url);
+    }
+  }
+
+  async function addFiles(list) {
+    const files = [...list].filter(looksLikeImage);
+    if (!files.length && list.length) { showToast('Questo file non è un\'immagine.'); return; }
+    for (const f of files) {
+      if (images.length + preparing >= Math.max(1, maxImages)) { showToast(`Puoi allegare al massimo ${maxImages} foto per domanda.`); break; }
+      preparing++;
+      updatePreparing();
+      try {
+        const jpg = await prepareImage(f);
+        images.push({ file: jpg, url: URL.createObjectURL(jpg) });
+      } catch (e) {
+        showToast('Non riesco a leggere questa foto. Se è in formato HEIC, prova a fare uno screenshot della foto e allega quello, oppure imposta la fotocamera su "Più compatibile".');
+      } finally {
+        preparing--;
+        updatePreparing();
+        renderPreviews();
+      }
+    }
+  }
+  function updatePreparing() {
+    sendBtn.disabled = preparing > 0 || box.disabled;
+    sendBtn.textContent = preparing > 0 ? 'Preparo la foto…' : 'Invia';
   }
   function renderPreviews() {
     previews.innerHTML = '';
@@ -153,7 +218,7 @@ Regole:
   }
 
   async function send(textOverride) {
-    if (!sample || busy) return;
+    if (!sample || busy || preparing > 0) return;
     const text = (textOverride != null ? textOverride : box.value).trim();
     const pics = images.slice();
     if (!text && !pics.length) { box.focus(); return; }
@@ -211,7 +276,7 @@ Regole:
       else ab.innerHTML = '';
       if (code === 'cancelled') { if (!e.text) ab.remove(); }
       else {
-        addNote(ab, ERRORS[code] || 'Qualcosa è andato storto. Riprova.', true);
+        addNote(ab, (ERRORS[code] || 'Qualcosa è andato storto. Riprova.') + (code ? ` (codice: ${code})` : ''), true);
         if (['not_granted', 'sampling_disabled', 'not_declared', 'capability_disabled', 'capability_removed'].includes(code)) setAvailable(false, ERRORS[code] || ERRORS.not_granted);
         if (code === 'images_unavailable') { maxImages = 0; photoBtns.forEach(b => { b.hidden = true; }); }
       }
