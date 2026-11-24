@@ -251,6 +251,7 @@ footer.site-footer {
 }
 
 /* ---------- Utility ---------- */
+[hidden] { display: none !important; }
 .muted { color: var(--muted); }
 .mt { margin-top: 16px; }
 .hidden { display: none !important; }

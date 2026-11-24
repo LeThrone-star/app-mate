@@ -6,6 +6,7 @@
 
   const NAV = [
     ['index.html', 'Home'],
+    ['index.html#tutor', 'Tutor IA'],
     ['grafici.html', 'Grafici'],
     ['calcolatrice.html', 'Calcolatrice'],
     ['matematica.html', 'Lab Matematica'],
