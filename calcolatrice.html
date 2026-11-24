@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calcolatrice · AppMate</title>
+  <meta name="description" content="Calcolatrice scientifica con cronologia, variabili, gradi e radianti.">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .calc-wrap { display: grid; grid-template-columns: minmax(0, 520px) minmax(0, 1fr); gap: 16px; align-items: start; }
+    .calc { padding: 16px; }
+    .display { background: var(--surface-2); border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; }
+    .display .pretty { min-height: 30px; font-size: 1.15rem; overflow-x: auto; overflow-y: hidden; color: var(--muted); }
+    .display input { width: 100%; border: 0; background: transparent; font-family: var(--mono); font-size: 1.25rem; outline: none; padding: 4px 0; }
+    .display .result { text-align: right; font-size: 2rem; font-weight: 700; min-height: 48px; font-variant-numeric: tabular-nums; overflow-x: auto; white-space: nowrap; }
+    .display .result.preview { color: var(--muted); font-weight: 500; }
+    .display .result.error { color: var(--bad); font-size: 1rem; font-weight: 600; padding-top: 14px; }
+    .display .sub { display: flex; justify-content: space-between; font-size: .8rem; color: var(--muted); }
+    .keys { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+    .keys button { padding: 13px 0; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; font-size: 1.02rem; font-weight: 600; transition: transform .05s; }
+    .keys button:active { transform: scale(.96); }
+    .keys button:hover { background: var(--surface-2); }
+    .keys button.fn { font-size: .88rem; color: var(--muted); background: var(--surface-2); }
+    .keys button.num { background: var(--surface); font-size: 1.15rem; }
+    .keys button.op { color: var(--math); font-size: 1.2rem; }
+    .keys button.eq { background: var(--math); border-color: var(--math); color: #fff; }
+    .keys button.clr { color: var(--bad); }
+    .hist { max-height: 420px; overflow-y: auto; }
+    .hist-item { padding: 10px 4px; border-bottom: 1px solid var(--border); cursor: pointer; }
+    .hist-item:hover { background: var(--surface-2); }
+    .hist-item .e { font-family: var(--mono); color: var(--muted); font-size: .9rem; }
+    .hist-item .r { font-weight: 700; text-align: right; font-size: 1.1rem; }
+    .vars { display: flex; flex-wrap: wrap; gap: 6px; }
+    .var-chip { font-family: var(--mono); background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; font-size: .88rem; cursor: pointer; }
+    .side-col { display: flex; flex-direction: column; gap: 16px; }
+    .tips li { margin-bottom: 4px; }
+    @media (max-width: 860px) { .calc-wrap { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="site-header"></header>
+  <main class="container">
+    <h1 class="page-title">Calcolatrice scientifica</h1>
+    <p class="page-sub">Scrivi con la tastiera o usa i tasti. Supporta funzioni, potenze, fattoriali, variabili (<code>a = 5</code>) e il risultato precedente <code>Ans</code>.</p>
+    <div class="calc-wrap">
+      <section class="card calc">
+        <div class="display">
+          <div class="sub"><span id="mode-label">RAD</span><span id="frac"></span></div>
+          <input id="calc-input" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Espressione" placeholder="0">
+          <div class="pretty" id="pretty"></div>
+          <div class="result preview" id="result"></div>
+        </div>
+        <div class="keys" id="keys">
+          <button class="fn" data-k="mode" id="mode-btn">DEG</button>
+          <button class="fn" data-i="sin(">sin</button>
+          <button class="fn" data-i="cos(">cos</button>
+          <button class="fn" data-i="tan(">tan</button>
+          <button class="fn" data-i="ln(">ln</button>
+
+          <button class="fn" data-i="log(">log</button>
+          <button class="fn" data-i="asin(">sin⁻¹</button>
+          <button class="fn" data-i="acos(">cos⁻¹</button>
+          <button class="fn" data-i="atan(">tan⁻¹</button>
+          <button class="fn" data-i="e^(">eˣ</button>
+
+          <button class="fn" data-i="^2">x²</button>
+          <button class="fn" data-i="^">xʸ</button>
+          <button class="fn" data-i="sqrt(">√</button>
+          <button class="fn" data-i="cbrt(">∛</button>
+          <button class="fn" data-i="!">n!</button>
+
+          <button class="fn" data-i="(">(</button>
+          <button class="fn" data-i=")">)</button>
+          <button class="fn" data-i="π">π</button>
+          <button class="fn" data-i="e">e</button>
+          <button class="fn" data-i="Ans">Ans</button>
+
+          <button class="num" data-i="7">7</button>
+          <button class="num" data-i="8">8</button>
+          <button class="num" data-i="9">9</button>
+          <button class="op" data-i="/" data-op>÷</button>
+          <button class="clr" data-k="ac">AC</button>
+
+          <button class="num" data-i="4">4</button>
+          <button class="num" data-i="5">5</button>
+          <button class="num" data-i="6">6</button>
+          <button class="op" data-i="*" data-op>×</button>
+          <button data-k="del" aria-label="Cancella">⌫</button>
+
+          <button class="num" data-i="1">1</button>
+          <button class="num" data-i="2">2</button>
+          <button class="num" data-i="3">3</button>
+          <button class="op" data-i="-" data-op>−</button>
+          <button class="fn" data-i="1/" >1/x</button>
+
+          <button class="num" data-i="0">0</button>
+          <button class="num" data-i=".">,</button>
+          <button class="fn" data-i="E">×10ⁿ</button>
+          <button class="op" data-i="+" data-op>+</button>
+          <button class="eq" data-k="eq">=</button>
+        </div>
+      </section>
+      <div class="side-col">
+        <section class="card pad">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <h3 style="margin:0;font-size:1rem">Cronologia</h3>
+            <button class="btn small" id="clear-hist">Svuota</button>
+          </div>
+          <div class="hist" id="hist"><p class="hint">I calcoli appariranno qui. Clicca un risultato per riutilizzarlo.</p></div>
+        </section>
+        <section class="card pad">
+          <h3 style="font-size:1rem">Variabili</h3>
+          <div class="vars" id="vars"><span class="hint">Nessuna variabile. Scrivi ad esempio <code>m = 2.5</code>.</span></div>
+        </section>
+        <section class="card pad tips">
+          <h3 style="font-size:1rem">Esempi da provare</h3>
+          <ul class="hint" style="padding-left:18px;margin:0">
+            <li><code>2^10</code>, <code>5!</code>, <code>sqrt(2)</code>, <code>(-8)^(1/3)</code></li>
+            <li><code>sin(30)</code> in modalità DEG, <code>sin(π/6)</code> in RAD</li>
+            <li><code>log(1000)</code>, <code>log(8, 2)</code>, <code>ln(e^3)</code></li>
+            <li><code>nCr(10, 3)</code>, <code>mcd(84, 36)</code>, <code>mcm(4, 6)</code></li>
+            <li><code>g = 9.81</code> e poi <code>sqrt(2 g 20)</code></li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </main>
+  <script src="assets/common.js"></script>
+  <script src="assets/parser.js"></script>
+  <script src="assets/calc.js"></script>
+</body>
+</html>

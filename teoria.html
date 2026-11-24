@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Teoria · AppMate</title>
+  <meta name="description" content="Teoria di matematica e fisica con formule, esempi, collegamenti ai laboratori e quiz.">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .theory { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 24px; align-items: start; }
+    .toc { position: sticky; top: 76px; max-height: calc(100vh - 96px); overflow-y: auto; padding: 14px; }
+    .toc h4 { font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 10px 8px 6px; }
+    .toc h4:first-child { margin-top: 0; }
+    .toc a { display: block; padding: 6px 10px; border-radius: 8px; text-decoration: none; color: var(--text); font-size: .92rem; }
+    .toc a:hover { background: var(--surface-2); }
+    .toc a.active { background: var(--math-soft); color: var(--math); font-weight: 600; }
+    .toc a.phys.active { background: var(--phys-soft); color: var(--phys); }
+    .topics { display: flex; flex-direction: column; gap: 20px; }
+    .topic { padding: 24px; scroll-margin-top: 80px; }
+    .topic h2 { font-size: 1.5rem; margin-top: 8px; }
+    .topic h3 { font-size: 1.05rem; margin: 18px 0 8px; }
+    .topic ul { padding-left: 20px; margin: 0 0 1em; }
+    .topic li { margin-bottom: 4px; }
+    .example { border-left: 3px solid var(--math); background: var(--surface-2); padding: 10px 14px; border-radius: 0 10px 10px 0; margin: 12px 0; }
+    .topic.phys .example { border-left-color: var(--phys); }
+    .example b:first-child { color: var(--math); }
+    .topic.phys .example b:first-child { color: var(--phys); }
+    table.vals { border-collapse: collapse; width: 100%; font-size: .92rem; margin: 8px 0 14px; }
+    table.vals th, table.vals td { border: 1px solid var(--border); padding: 6px 8px; text-align: center; }
+    table.vals th { background: var(--surface-2); }
+    .table-wrap { overflow-x: auto; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+    .quiz { margin-top: 18px; padding: 14px; border: 1px dashed var(--border); border-radius: 12px; }
+    .quiz .q { font-weight: 650; margin-bottom: 10px; }
+    .quiz .q::before { content: "Mettiti alla prova · "; color: var(--muted); font-weight: 500; }
+    .quiz .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+    .quiz .opts button { border: 1px solid var(--border); background: var(--surface); border-radius: 10px; padding: 7px 14px; cursor: pointer; }
+    .quiz .opts button.right { background: color-mix(in srgb, var(--good) 18%, transparent); border-color: var(--good); color: var(--good); font-weight: 700; }
+    .quiz .opts button.wrong { background: color-mix(in srgb, var(--bad) 14%, transparent); border-color: var(--bad); color: var(--bad); }
+    .quiz .why { margin-top: 10px; font-size: .9rem; color: var(--muted); display: none; }
+    .quiz.done .why { display: block; }
+    .formula .katex-display { margin: .3em 0; }
+    @media (max-width: 900px) {
+      .theory { grid-template-columns: 1fr; }
+      .toc { position: static; max-height: none; }
+      .topic { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header"></header>
+  <main class="container">
+    <h1 class="page-title">Teoria</h1>
+    <p class="page-sub">Le idee chiave di matematica e fisica, con formule, esempi svolti e collegamenti diretti ai grafici e ai laboratori per vederle in azione.</p>
+    <div class="theory">
+      <nav class="card toc" id="toc" aria-label="Indice">
+        <h4>Matematica</h4>
+        <a href="#funzioni">Funzioni e grafici</a>
+        <a href="#retta">La retta</a>
+        <a href="#secondo-grado">Equazioni di 2° grado</a>
+        <a href="#trigonometria">Trigonometria</a>
+        <a href="#esponenziali">Esponenziali e logaritmi</a>
+        <a href="#derivate">Derivate</a>
+        <a href="#integrali">Integrali</a>
+        <h4>Fisica</h4>
+        <a class="phys" href="#vettori">Grandezze e vettori</a>
+        <a class="phys" href="#cinematica">Cinematica</a>
+        <a class="phys" href="#moto-parabolico">Moto parabolico</a>
+        <a class="phys" href="#dinamica">Dinamica e leggi di Newton</a>
+        <a class="phys" href="#piano-inclinato">Piano inclinato</a>
+        <a class="phys" href="#leve">Momento e leve</a>
+        <a class="phys" href="#energia">Lavoro ed energia</a>
+        <a class="phys" href="#oscillazioni">Oscillazioni</a>
+      </nav>
+
+      <div class="topics">
+        <!-- ================= MATEMATICA ================= -->
+        <article class="card topic" id="funzioni">
+          <span class="tag math">Matematica</span>
+          <h2>Funzioni e grafici</h2>
+          <p>Una <b>funzione</b> \(f\) associa a ogni elemento \(x\) del <b>dominio</b> uno e un solo valore \(y = f(x)\). Il suo <b>grafico</b> è l'insieme dei punti \((x, f(x))\) del piano cartesiano.</p>
+          <h3>Funzioni fondamentali</h3>
+          <ul>
+            <li><b>Lineare</b> \(y = mx + q\): una retta.</li>
+            <li><b>Quadratica</b> \(y = ax^2 + bx + c\): una parabola.</li>
+            <li><b>Esponenziale</b> \(y = a^x\) e <b>logaritmica</b> \(y = \log_a x\).</li>
+            <li><b>Goniometriche</b> \(y = \sin x\), \(y = \cos x\), \(y = \tan x\): periodiche.</li>
+          </ul>
+          <h3>Trasformazioni del grafico</h3>
+          <div class="formula">$$y = a\,f(x - h) + k$$</div>
+          <ul>
+            <li>\(h\) trasla il grafico in orizzontale (a destra se \(h &gt; 0\)), \(k\) in verticale.</li>
+            <li>\(a\) dilata in verticale; se \(a &lt; 0\) il grafico si ribalta rispetto all'asse \(x\).</li>
+          </ul>
+          <div class="example"><b>Esempio.</b> \(y = (x-2)^2 + 1\) è la parabola \(y = x^2\) spostata di 2 a destra e 1 in alto: il vertice è \((2, 1)\).</div>
+          <div class="actions">
+            <a class="btn small primary" data-graph='["y = a(x - h)^2 + k","a = 1","h = 2","k = 1"]'>Apri nel grafico con gli slider</a>
+          </div>
+          <div class="quiz" data-answer="2">
+            <p class="q">Il grafico di \(y = \sqrt{x} - 3\) rispetto a \(y = \sqrt{x}\) è…</p>
+            <div class="opts"><button>spostato a destra di 3</button><button>spostato in alto di 3</button><button>spostato in basso di 3</button></div>
+            <p class="why">Sottrarre 3 a tutta la funzione (\(k = -3\)) sposta il grafico verso il basso.</p>
+          </div>
+        </article>
+
+        <article class="card topic" id="retta">
+          <span class="tag math">Matematica</span>
+          <h2>La retta nel piano cartesiano</h2>
+          <p>Ogni retta non verticale ha equazione \(y = mx + q\), dove \(m\) è il <b>coefficiente angolare</b> (pendenza) e \(q\) l'<b>ordinata all'origine</b>.</p>
+          <div class="formula">$$m = \frac{y_2 - y_1}{x_2 - x_1} \qquad y - y_1 = m(x - x_1)$$</div>
+          <ul>
+            <li>Rette <b>parallele</b>: stesso coefficiente angolare, \(m_1 = m_2\).</li>
+            <li>Rette <b>perpendicolari</b>: \(m_1 \cdot m_2 = -1\).</li>
+            <li>Distanza tra due punti: \(d = \sqrt{(x_2-x_1)^2 + (y_2-y_1)^2}\).</li>
+          </ul>
+          <div class="example"><b>Esempio.</b> La retta per \(A(1, 2)\) e \(B(3, 6)\) ha \(m = \frac{6-2}{3-1} = 2\), quindi \(y - 2 = 2(x-1)\), cioè \(y = 2x\).</div>
+          <div class="actions">
+            <a class="btn small primary" data-graph='["(x_1, y_1)","(x_2, y_2)","x_1 = 1","y_1 = 2","x_2 = 3","y_2 = 6","y = (y_2 - y_1)/(x_2 - x_1) (x - x_1) + y_1"]'>Retta per due punti (trascina i punti)</a>
+          </div>
+          <div class="quiz" data-answer="1">
+            <p class="q">Una retta perpendicolare a \(y = 2x + 1\) ha pendenza…</p>
+            <div class="opts"><button>2</button><button>−1/2</button><button>1/2</button><button>−2</button></div>
+            <p class="why">Serve \(m \cdot 2 = -1\), quindi \(m = -\tfrac12\).</p>
+          </div>
+        </article>
+
+        <article class="card topic" id="secondo-grado">
+          <span class="tag math">Matematica</span>
+          <h2>Equazioni di secondo grado</h2>
+          <p>Un'equazione nella forma \(ax^2 + bx + c = 0\) con \(a \neq 0\) si risolve con la <b>formula risolutiva</b>. Il segno del <b>discriminante</b> \(\Delta\) dice quante soluzioni reali ci sono.</p>
+          <div class="formula">$$\Delta = b^2 - 4ac \qquad x_{1,2} = \frac{-b \pm \sqrt{\Delta}}{2a}$$</div>
+          <ul>
+            <li>\(\Delta &gt; 0\): due soluzioni reali distinte (la parabola taglia l'asse \(x\) in due punti).</li>
+            <li>\(\Delta = 0\): due soluzioni coincidenti (la parabola è tangente all'asse \(x\)).</li>
+            <li>\(\Delta &lt; 0\): nessuna soluzione reale.</li>
+          </ul>
+          <p>Il <b>vertice</b> della parabola è \(V\left(-\frac{b}{2a}, -\frac{\Delta}{4a}\right)\); inoltre \(x_1 + x_2 = -\frac{b}{a}\) e \(x_1 x_2 = \frac{c}{a}\).</p>
+          <div class="example"><b>Esempio.</b> \(x^2 - 5x + 6 = 0\): \(\Delta = 25 - 24 = 1\), quindi \(x = \frac{5 \pm 1}{2}\), cioè \(x_1 = 2\), \(x_2 = 3\).</div>
+          <div class="actions">
+            <a class="btn small primary" href="matematica.html#parabola">Risolvi passo per passo nel laboratorio</a>
+            <a class="btn small" data-graph='["y = x^2 - 5x + 6"]'>Apri nel grafico</a>
+          </div>
+          <div class="quiz" data-answer="0">
+            <p class="q">Quante soluzioni reali ha \(x^2 + 2x + 5 = 0\)?</p>
+            <div class="opts"><button>nessuna</button><button>una</button><button>due</button></div>
+            <p class="why">\(\Delta = 4 - 20 = -16 &lt; 0\): nessuna soluzione reale.</p>
+          </div>
+        </article>
+
+        <article class="card topic" id="trigonometria">
+          <span class="tag math">Matematica</span>
+          <h2>Trigonometria</h2>
+          <p>Gli angoli si misurano in <b>gradi</b> o in <b>radianti</b>: un giro completo vale \(360^\circ = 2\pi\) rad. Sulla circonferenza goniometrica (raggio 1) il punto associato all'angolo \(\alpha\) ha coordinate \((\cos\alpha, \sin\alpha)\).</p>
+          <div class="formula">$$\sin^2\alpha + \cos^2\alpha = 1 \qquad \tan\alpha = \frac{\sin\alpha}{\cos\alpha} \qquad \text{rad} = \text{gradi}\cdot\frac{\pi}{180}$$</div>
+          <h3>Valori notevoli</h3>
+          <div class="table-wrap">
+            <table class="vals">
+              <tr><th>\(\alpha\)</th><td>\(0^\circ\)</td><td>\(30^\circ\)</td><td>\(45^\circ\)</td><td>\(60^\circ\)</td><td>\(90^\circ\)</td></tr>
+              <tr><th>rad</th><td>\(0\)</td><td>\(\frac{\pi}{6}\)</td><td>\(\frac{\pi}{4}\)</td><td>\(\frac{\pi}{3}\)</td><td>\(\frac{\pi}{2}\)</td></tr>
+              <tr><th>\(\sin\)</th><td>\(0\)</td><td>\(\frac12\)</td><td>\(\frac{\sqrt2}{2}\)</td><td>\(\frac{\sqrt3}{2}\)</td><td>\(1\)</td></tr>
+              <tr><th>\(\cos\)</th><td>\(1\)</td><td>\(\frac{\sqrt3}{2}\)</td><td>\(\frac{\sqrt2}{2}\)</td><td>\(\frac12\)</td><td>\(0\)</td></tr>
+              <tr><th>\(\tan\)</th><td>\(0\)</td><td>\(\frac{\sqrt3}{3}\)</td><td>\(1\)</td><td>\(\sqrt3\)</td><td>—</td></tr>
+            </table>
+          </div>
+          <p>In un triangolo rettangolo: \(\text{cateto} = \text{ipotenusa}\cdot\sin(\text{angolo opposto})\) e \(\text{cateto} = \text{ipotenusa}\cdot\cos(\text{angolo adiacente})\).</p>
+          <div class="actions">
+            <a class="btn small primary" href="matematica.html#goniometria">Circonferenza goniometrica interattiva</a>
+            <a class="btn small" data-graph='["y = A sin(ω x + φ)","A = 1","ω = 1","φ = 0"]'>Sinusoide con slider</a>
+          </div>
+          <div class="quiz" data-answer="1">
+            <p class="q">Quanto vale \(\cos 60^\circ\)?</p>
+            <div class="opts"><button>√3/2</button><button>1/2</button><button>√2/2</button><button>1</button></div>
+            <p class="why">\(60^\circ = \frac{\pi}{3}\) e \(\cos\frac{\pi}{3} = \frac12\).</p>
+          </div>
+        </article>
+
+        <article class="card topic" id="esponenziali">
+          <span class="tag math">Matematica</span>
+          <h2>Esponenziali e logaritmi</h2>
+          <p>Il <b>logaritmo</b> è l'operazione inversa della potenza: \(\log_a b = c \iff a^c = b\) (con \(a &gt; 0\), \(a \ne 1\), \(b &gt; 0\)). Il logaritmo naturale \(\ln\) usa la base \(e \approx 2{,}718\).</p>
+          <div class="formula">$$\log_a(xy) = \log_a x + \log_a y \qquad \log_a\frac{x}{y} = \log_a x - \log_a y \qquad \log_a x^n = n\log_a x \qquad \log_a x = \frac{\ln x}{\ln a}$$</div>
+          <p>I grafici di \(y = a^x\) e \(y = \log_a x\) sono <b>simmetrici</b> rispetto alla retta \(y = x\). Per \(a &gt; 1\) sono crescenti, per \(0 &lt; a &lt; 1\) decrescenti.</p>
+          <div class="example"><b>Esempio.</b> \(2^x = 32 \Rightarrow x = \log_2 32 = 5\). E \(\log_{10} 1000 = 3\) perché \(10^3 = 1000\).</div>
+          <div class="actions"><a class="btn small primary" data-graph='["y = a^x","y = log(x, a)","y = x","a = 2"]'>Esponenziale e logaritmo a confronto</a></div>
+        </article>
+
+        <article class="card topic" id="derivate">
+          <span class="tag math">Matematica</span>
+          <h2>Limiti e derivate</h2>
+          <p>La <b>derivata</b> di \(f\) in \(x_0\) misura la rapidità con cui \(f\) cambia: è la <b>pendenza della retta tangente</b> al grafico in quel punto, ottenuta come limite del rapporto incrementale.</p>
+          <div class="formula">$$f'(x_0) = \lim_{h \to 0} \frac{f(x_0 + h) - f(x_0)}{h} \qquad \text{tangente: } y = f(x_0) + f'(x_0)(x - x_0)$$</div>
+          <h3>Derivate fondamentali e regole</h3>
+          <div class="table-wrap">
+            <table class="vals">
+              <tr><th>\(f(x)\)</th><td>\(k\)</td><td>\(x^n\)</td><td>\(\sin x\)</td><td>\(\cos x\)</td><td>\(e^x\)</td><td>\(\ln x\)</td></tr>
+              <tr><th>\(f'(x)\)</th><td>\(0\)</td><td>\(n x^{n-1}\)</td><td>\(\cos x\)</td><td>\(-\sin x\)</td><td>\(e^x\)</td><td>\(\frac1x\)</td></tr>
+            </table>
+          </div>
+          <div class="formula">$$(f \pm g)' = f' \pm g' \qquad (fg)' = f'g + fg' \qquad \left(\frac fg\right)' = \frac{f'g - fg'}{g^2} \qquad [f(g(x))]' = f'(g(x))\,g'(x)$$</div>
+          <p>Se \(f'(x) &gt; 0\) la funzione <b>cresce</b>, se \(f'(x) &lt; 0\) <b>decresce</b>; nei punti di <b>massimo</b> e <b>minimo</b> interni si ha \(f'(x) = 0\).</p>
+          <div class="example"><b>Esempio.</b> \(f(x) = x^3 - 3x\) ha \(f'(x) = 3x^2 - 3 = 0\) per \(x = \pm1\): massimo in \((-1, 2)\) e minimo in \((1, -2)\).</div>
+          <div class="actions">
+            <a class="btn small primary" href="matematica.html#derivata">Dalla secante alla tangente</a>
+            <a class="btn small" data-graph='["f(x) = x^3 - 3x","f&#39;(x)"]'>Funzione e derivata nel grafico</a>
+          </div>
+          <div class="quiz" data-answer="3">
+            <p class="q">Qual è la derivata di \(f(x) = 4x^3\)?</p>
+            <div class="opts"><button>4x²</button><button>12x³</button><button>x⁴</button><button>12x²</button></div>
+            <p class="why">\((4x^3)' = 4\cdot 3x^2 = 12x^2\).</p>
+          </div>
+        </article>
+
+        <article class="card topic" id="integrali">
+          <span class="tag math">Matematica</span>
+          <h2>Integrali</h2>
+          <p>Una <b>primitiva</b> di \(f\) è una funzione \(F\) con \(F' = f\). L'<b>integrale definito</b> rappresenta l'area con segno compresa tra il grafico e l'asse \(x\) nell'intervallo \([a, b]\).</p>
+          <div class="formula">$$\int x^n\,dx = \frac{x^{n+1}}{n+1} + C \qquad \int_a^b f(x)\,dx = F(b) - F(a) \quad\text{(teorema fondamentale)}$$</div>
+          <p>L'integrale è il limite delle <b>somme di Riemann</b>: si divide \([a,b]\) in \(n\) rettangoli di base \(\Delta x\) e si sommano le loro aree.</p>
+          <div class="example"><b>Esempio.</b> \(\int_0^2 x^2\,dx = \left[\frac{x^3}{3}\right]_0^2 = \frac83 \approx 2{,}667\).</div>
+          <div class="actions">
+            <a class="btn small primary" href="matematica.html#integrale">Somme di Riemann interattive</a>
+          </div>
+          <div class="quiz" data-answer="0">
+            <p class="q">Quanto vale \(\int_0^\pi \sin x\,dx\)?</p>
+            <div class="opts"><button>2</button><button>0</button><button>1</button><button>π</button></div>
+            <p class="why">\([-\cos x]_0^\pi = -\cos\pi + \cos 0 = 1 + 1 = 2\).</p>
+          </div>
+        </article>
+
+        <!-- ================= FISICA ================= -->
+        <article class="card topic phys" id="vettori">
+          <span class="tag phys">Fisica</span>
+          <h2>Grandezze fisiche e vettori</h2>
+          <p>Le grandezze del <b>Sistema Internazionale</b> hanno unità fondamentali: metro (m), chilogrammo (kg), secondo (s), ampere (A), kelvin (K), mole (mol), candela (cd). Una grandezza è <b>scalare</b> se basta un numero (massa, tempo, energia), <b>vettoriale</b> se servono anche direzione e verso (spostamento, velocità, forza).</p>
+          <div class="formula">$$\vec v = (v_x, v_y) \qquad v_x = v\cos\theta \qquad v_y = v\sin\theta \qquad |\vec v| = \sqrt{v_x^2 + v_y^2}$$</div>
+          <p>I vettori si sommano componente per componente (o con la regola del parallelogramma).</p>
+          <div class="example"><b>Esempio.</b> Una velocità di 10 m/s inclinata di 30°: \(v_x = 10\cos 30^\circ \approx 8{,}66\) m/s, \(v_y = 10\sin 30^\circ = 5\) m/s.</div>
+        </article>
+
+        <article class="card topic phys" id="cinematica">
+          <span class="tag phys">Fisica</span>
+          <h2>Cinematica</h2>
+          <p>La cinematica descrive il moto senza occuparsi delle cause. Velocità media \(v = \frac{\Delta s}{\Delta t}\), accelerazione media \(a = \frac{\Delta v}{\Delta t}\).</p>
+          <h3>Moto rettilineo uniforme (MRU)</h3>
+          <div class="formula">$$v = \text{costante} \qquad s(t) = s_0 + v\,t$$</div>
+          <h3>Moto uniformemente accelerato (MRUA)</h3>
+          <div class="formula">$$v(t) = v_0 + a\,t \qquad s(t) = s_0 + v_0 t + \tfrac12 a t^2 \qquad v^2 = v_0^2 + 2a\,\Delta s$$</div>
+          <p>La <b>caduta libera</b> è un MRUA con \(a = g \approx 9{,}81\ \text{m/s}^2\) (sulla Terra, trascurando l'aria). Nel grafico spazio-tempo il MRU è una retta, il MRUA una parabola.</p>
+          <div class="example"><b>Esempio.</b> Un sasso cade da 20 m: \(t = \sqrt{2h/g} = \sqrt{40/9{,}81} \approx 2{,}02\) s e arriva a \(v = g t \approx 19{,}8\) m/s.</div>
+          <div class="actions"><a class="btn small primary" data-graph='["s(t) = s_0 + v_0 t + 1/2 a t^2","s_0 = 0","v_0 = 2","a = 1"]'>Legge oraria s(t) nel grafico</a></div>
+          <div class="quiz" data-answer="2">
+            <p class="q">Un'auto parte da ferma con \(a = 2\ \text{m/s}^2\). Che velocità ha dopo 5 s?</p>
+            <div class="opts"><button>2 m/s</button><button>7 m/s</button><button>10 m/s</button><button>25 m/s</button></div>
+            <p class="why">\(v = v_0 + at = 0 + 2\cdot5 = 10\) m/s.</p>
+          </div>
+        </article>
+
+        <article class="card topic phys" id="moto-parabolico">
+          <span class="tag phys">Fisica</span>
+          <h2>Moto parabolico</h2>
+          <p>Un corpo lanciato con velocità \(v_0\) e angolo \(\theta\) si muove di moto <b>uniforme in orizzontale</b> e <b>uniformemente accelerato in verticale</b>. La traiettoria è una parabola.</p>
+          <div class="formula">$$x(t) = v_0\cos\theta\,t \qquad y(t) = v_0\sin\theta\,t - \tfrac12 g t^2 \qquad y = x\tan\theta - \frac{g}{2v_0^2\cos^2\theta}x^2$$</div>
+          <div class="formula">$$t_{volo} = \frac{2v_0\sin\theta}{g} \qquad G = \frac{v_0^2\sin 2\theta}{g} \qquad h_{max} = \frac{v_0^2\sin^2\theta}{2g}$$</div>
+          <p>A parità di \(v_0\), la gittata è massima per \(\theta = 45^\circ\); angoli complementari danno la stessa gittata.</p>
+          <div class="actions">
+            <a class="btn small phys" href="fisica.html#proiettile">Simulazione del cannone</a>
+            <a class="btn small" data-graph='["y = x tan(θ) - g/(2 v^2 cos(θ)^2) x^2","θ = 0.785","v = 15","g = 9.81"]'>Traiettoria nel grafico</a>
+          </div>
+          <div class="quiz" data-answer="1">
+            <p class="q">Con quale angolo un proiettile arriva più lontano (da terra, senza aria)?</p>
+            <div class="opts"><button>30°</button><button>45°</button><button>60°</button><button>90°</button></div>
+            <p class="why">\(G\) è proporzionale a \(\sin 2\theta\), che è massimo (vale 1) per \(2\theta = 90^\circ\).</p>
+          </div>
+        </article>
+
+        <article class="card topic phys" id="dinamica">
+          <span class="tag phys">Fisica</span>
+          <h2>Dinamica: le leggi di Newton</h2>
+          <ul>
+            <li><b>Primo principio (inerzia)</b>: se la forza totale è nulla, un corpo resta fermo o si muove di moto rettilineo uniforme.</li>
+            <li><b>Secondo principio</b>: \(\vec F = m\vec a\). La forza si misura in newton: \(1\ \text{N} = 1\ \text{kg}\cdot\text{m/s}^2\).</li>
+            <li><b>Terzo principio (azione e reazione)</b>: se A esercita una forza su B, B esercita su A una forza uguale e opposta.</li>
+          </ul>
+          <h3>Forze importanti</h3>
+          <div class="formula">$$P = mg \qquad F_{att} = \mu N \qquad F_{el} = -kx$$</div>
+          <div class="example"><b>Esempio.</b> Per accelerare un carrello di 50 kg a \(0{,}4\ \text{m/s}^2\) serve una forza netta \(F = 50 \cdot 0{,}4 = 20\) N.</div>
+        </article>
+
+        <article class="card topic phys" id="piano-inclinato">
+          <span class="tag phys">Fisica</span>
+          <h2>Il piano inclinato</h2>
+          <p>Su un piano inclinato di un angolo \(\alpha\) il peso si scompone in una componente parallela al piano e una perpendicolare. La reazione vincolare \(N\) bilancia la componente perpendicolare.</p>
+          <div class="formula">$$P_\parallel = mg\sin\alpha \qquad N = mg\cos\alpha \qquad a = g(\sin\alpha - \mu_d\cos\alpha)$$</div>
+          <p>Senza attrito \(a = g\sin\alpha\). Con attrito statico \(\mu_s\), il corpo resta fermo finché \(\tan\alpha \le \mu_s\).</p>
+          <div class="example"><b>Esempio.</b> Un blocco su un piano a 30° senza attrito accelera con \(a = 9{,}81 \cdot 0{,}5 \approx 4{,}9\ \text{m/s}^2\).</div>
+          <div class="actions"><a class="btn small phys" href="fisica.html#piano">Simulazione del piano inclinato</a></div>
+          <div class="quiz" data-answer="0">
+            <p class="q">Se l'angolo del piano aumenta, la reazione vincolare \(N\)…</p>
+            <div class="opts"><button>diminuisce</button><button>aumenta</button><button>resta uguale</button></div>
+            <p class="why">\(N = mg\cos\alpha\) e il coseno diminuisce quando \(\alpha\) cresce da 0° a 90°.</p>
+          </div>
+        </article>
+
+        <article class="card topic phys" id="leve">
+          <span class="tag phys">Fisica</span>
+          <h2>Momento di una forza e leve</h2>
+          <p>Il <b>momento</b> di una forza rispetto a un punto misura la sua capacità di far ruotare un corpo: \(M = F \cdot b\), dove \(b\) è il <b>braccio</b> (la distanza tra il punto e la retta d'azione della forza). Un corpo rigido è in equilibrio se la somma delle forze e la somma dei momenti sono nulle.</p>
+          <div class="formula">$$M = F\cdot b \qquad \text{equilibrio della leva: } F\cdot b_F = R\cdot b_R \qquad V = \frac{R}{F} = \frac{b_F}{b_R}$$</div>
+          <h3>I tre generi di leva</h3>
+          <ul>
+            <li><b>1° genere</b> — fulcro tra forza e resistenza: altalena, forbici, pinze. Può essere vantaggiosa, svantaggiosa o indifferente.</li>
+            <li><b>2° genere</b> — resistenza tra fulcro e forza: carriola, schiaccianoci, apribottiglie. Sempre vantaggiosa.</li>
+            <li><b>3° genere</b> — forza tra fulcro e resistenza: pinzetta, canna da pesca, il nostro avambraccio. Sempre svantaggiosa, ma permette movimenti ampi e precisi.</li>
+          </ul>
+          <div class="example"><b>Esempio.</b> Con un piede di porco di 1,2 m e fulcro a 0,1 m dal sasso: \(b_F = 1{,}1\) m, \(b_R = 0{,}1\) m. Per sollevare 1000 N bastano \(F = \frac{1000\cdot 0{,}1}{1{,}1} \approx 91\) N.</div>
+          <div class="actions"><a class="btn small phys" href="fisica.html#leve">Simulazione delle leve</a></div>
+          <div class="quiz" data-answer="2">
+            <p class="q">La carriola è una leva di…</p>
+            <div class="opts"><button>1° genere</button><button>3° genere</button><button>2° genere</button></div>
+            <p class="why">Il fulcro è la ruota, il carico sta in mezzo e la forza si applica alle maniglie: 2° genere, sempre vantaggiosa.</p>
+          </div>
+        </article>
+
+        <article class="card topic phys" id="energia">
+          <span class="tag phys">Fisica</span>
+          <h2>Lavoro ed energia</h2>
+          <p>Il <b>lavoro</b> di una forza costante è \(L = F\,s\cos\theta\) e si misura in joule (J). La <b>potenza</b> è il lavoro per unità di tempo, \(P = \frac{L}{t}\), in watt (W).</p>
+          <div class="formula">$$K = \tfrac12 m v^2 \qquad U_g = mgh \qquad U_{el} = \tfrac12 k x^2 \qquad L_{tot} = \Delta K$$</div>
+          <p>In assenza di attriti l'<b>energia meccanica</b> \(E = K + U\) si conserva: l'energia si trasforma da una forma all'altra ma il totale non cambia.</p>
+          <div class="example"><b>Esempio.</b> Un corpo cade da 5 m: \(mgh = \tfrac12 mv^2 \Rightarrow v = \sqrt{2gh} = \sqrt{98{,}1} \approx 9{,}9\) m/s, indipendentemente dalla massa.</div>
+          <div class="actions"><a class="btn small phys" href="fisica.html#pendolo">Guarda l'energia nel pendolo</a></div>
+        </article>
+
+        <article class="card topic phys" id="oscillazioni">
+          <span class="tag phys">Fisica</span>
+          <h2>Oscillazioni: molla e pendolo</h2>
+          <p>Un sistema soggetto a una forza di richiamo proporzionale allo spostamento compie un <b>moto armonico</b>: la posizione varia come una sinusoide.</p>
+          <h3>Sistema massa-molla</h3>
+          <div class="formula">$$F = -kx \qquad x(t) = A\cos(\omega t + \varphi) \qquad \omega = \sqrt{\frac{k}{m}} \qquad T = 2\pi\sqrt{\frac{m}{k}}$$</div>
+          <h3>Pendolo semplice</h3>
+          <div class="formula">$$T \approx 2\pi\sqrt{\frac{L}{g}} \qquad (\text{piccole oscillazioni})$$</div>
+          <p>Il periodo del pendolo non dipende dalla massa né (per piccole ampiezze) dall'ampiezza: è l'<b>isocronismo</b>. Per angoli grandi il periodo reale è un po' più lungo.</p>
+          <div class="example"><b>Esempio.</b> Un pendolo lungo 1 m sulla Terra ha \(T = 2\pi\sqrt{1/9{,}81} \approx 2{,}01\) s; sulla Luna \(T \approx 4{,}94\) s.</div>
+          <div class="actions">
+            <a class="btn small phys" href="fisica.html#molla">Simulazione della molla</a>
+            <a class="btn small phys" href="fisica.html#pendolo">Simulazione del pendolo</a>
+            <a class="btn small" data-graph='["y = A cos(sqrt(k/m) x)","A = 1","k = 4","m = 1"]'>Moto armonico x(t) nel grafico</a>
+          </div>
+          <div class="quiz" data-answer="1">
+            <p class="q">Se quadruplichi la lunghezza di un pendolo, il periodo…</p>
+            <div class="opts"><button>quadruplica</button><button>raddoppia</button><button>resta uguale</button><button>si dimezza</button></div>
+            <p class="why">\(T\) è proporzionale a \(\sqrt{L}\): \(\sqrt{4} = 2\), quindi il periodo raddoppia.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </main>
+  <footer class="site-footer">AppMate · Teoria di matematica e fisica</footer>
+  <script src="assets/common.js"></script>
+  <script>
+    // Quiz
+    document.querySelectorAll('.quiz').forEach(q => {
+      const ans = +q.dataset.answer;
+      q.querySelectorAll('.opts button').forEach((b, i) => b.addEventListener('click', () => {
+        q.querySelectorAll('.opts button').forEach((x, j) => {
+          x.classList.remove('right', 'wrong');
+          if (j === ans) x.classList.add('right');
+        });
+        if (i !== ans) b.classList.add('wrong');
+        q.classList.add('done');
+      }));
+    });
+    // Evidenzia la sezione visibile nell'indice
+    const links = [...document.querySelectorAll('#toc a')];
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    document.querySelectorAll('.topic').forEach(t => obs.observe(t));
+  </script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Laboratorio di Matematica · AppMate</title>
+  <meta name="description" content="Esperimenti interattivi di matematica: circonferenza goniometrica, derivate, integrali e parabole.">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .chk { display: flex; gap: 14px; flex-wrap: wrap; font-size: .9rem; }
+    .chk label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
+    .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; }
+    #parab-steps .katex-display { margin: .4em 0; }
+  </style>
+</head>
+<body>
+  <header class="site-header"></header>
+  <main class="container">
+    <span class="tag math">Laboratorio</span>
+    <h1 class="page-title">Laboratorio di Matematica</h1>
+    <p class="page-sub">Esplora i concetti muovendo gli slider: vedi come cambiano grafici, valori e formule in tempo reale. Nei grafici puoi trascinare e usare la rotellina per lo zoom.</p>
+
+    <div class="tabs" id="tabs">
+      <button data-tab="goniometria">Circonferenza goniometrica</button>
+      <button data-tab="derivata">Derivata e tangente</button>
+      <button data-tab="integrale">Integrale e aree</button>
+      <button data-tab="parabola">Equazione di 2° grado</button>
+    </div>
+
+    <!-- GONIOMETRIA -->
+    <section data-panel="goniometria">
+      <div class="lab">
+        <div class="card stage split-canvas"><canvas id="c-circle" aria-label="Circonferenza goniometrica"></canvas><canvas id="c-wave" aria-label="Grafici di seno e coseno"></canvas></div>
+        <div class="side">
+          <div class="card pad">
+            <h3>Angolo</h3>
+            <div id="ctl-gonio"></div>
+            <div class="chk mt">
+              <label><input type="checkbox" id="g-sin" checked><span class="swatch" style="background:#e03131"></span> seno</label>
+              <label><input type="checkbox" id="g-cos" checked><span class="swatch" style="background:#1c7ed6"></span> coseno</label>
+              <label><input type="checkbox" id="g-tan"><span class="swatch" style="background:#2f9e44"></span> tangente</label>
+            </div>
+            <div class="btn-row mt"><button class="btn primary small" id="g-play">▶ Anima</button></div>
+            <p class="hint mt" style="margin-bottom:0">Trascina il punto sulla circonferenza.</p>
+          </div>
+          <div class="card pad"><h3>Valori</h3><dl class="readout" id="out-gonio"></dl></div>
+        </div>
+      </div>
+      <div class="card pad mt theory-box">
+        <h3>Seno, coseno e tangente</h3>
+        <p>Sulla circonferenza di raggio 1 centrata nell'origine, il punto associato all'angolo \(\alpha\) ha coordinate \((\cos\alpha, \sin\alpha)\). La tangente è l'ordinata del punto in cui il raggio prolungato incontra la retta \(x = 1\).</p>
+        <div class="formula">$$\sin^2\alpha + \cos^2\alpha = 1 \qquad \tan\alpha = \frac{\sin\alpha}{\cos\alpha} \qquad \alpha_{rad} = \alpha_{gradi}\cdot\frac{\pi}{180}$$</div>
+        <a href="teoria.html#trigonometria">Approfondisci nella teoria →</a>
+      </div>
+    </section>
+
+    <!-- DERIVATA -->
+    <section data-panel="derivata">
+      <div class="lab">
+        <div class="card stage"><canvas id="c-deriv" aria-label="Grafico della funzione con retta tangente"></canvas></div>
+        <div class="side">
+          <div class="card pad">
+            <h3>Funzione</h3>
+            <div class="ctrl"><label><span>f(x) =</span></label><input type="text" id="d-f" value="x^3/3 - x" spellcheck="false"></div>
+            <div class="hint" id="d-err" style="color:var(--bad)"></div>
+            <div id="ctl-deriv"></div>
+            <div class="chk">
+              <label><input type="checkbox" id="d-sec" checked><span class="swatch" style="background:#f08c00"></span> secante</label>
+              <label><input type="checkbox" id="d-tan" checked><span class="swatch" style="background:#2f9e44"></span> tangente</label>
+              <label><input type="checkbox" id="d-der"><span class="swatch" style="background:#7048e8"></span> grafico di f′(x)</label>
+            </div>
+          </div>
+          <div class="card pad"><h3>Valori</h3><dl class="readout" id="out-deriv"></dl></div>
+        </div>
+      </div>
+      <div class="card pad mt theory-box">
+        <h3>Dalla secante alla tangente</h3>
+        <p>Il <b>rapporto incrementale</b> è la pendenza della retta secante che passa per \((x_0, f(x_0))\) e \((x_0+h, f(x_0+h))\). Quando \(h\) tende a 0 la secante diventa la <b>retta tangente</b> e la sua pendenza è la <b>derivata</b>. Riduci \(h\) con lo slider e guarda la secante avvicinarsi alla tangente.</p>
+        <div class="formula">$$f'(x_0) = \lim_{h\to 0}\frac{f(x_0+h)-f(x_0)}{h} \qquad\quad y = f(x_0) + f'(x_0)(x - x_0)$$</div>
+        <a href="teoria.html#derivate">Approfondisci nella teoria →</a>
+      </div>
+    </section>
+
+    <!-- INTEGRALE -->
+    <section data-panel="integrale">
+      <div class="lab">
+        <div class="card stage"><canvas id="c-integ" aria-label="Somme di Riemann"></canvas></div>
+        <div class="side">
+          <div class="card pad">
+            <h3>Funzione e intervallo</h3>
+            <div class="ctrl"><label><span>f(x) =</span></label><input type="text" id="i-f" value="sin(x) + 1.5" spellcheck="false"></div>
+            <div class="hint" id="i-err" style="color:var(--bad)"></div>
+            <div id="ctl-integ"></div>
+            <div class="ctrl">
+              <label><span>Metodo</span></label>
+              <div class="seg" id="i-method">
+                <button data-m="left" class="active">Sinistra</button><button data-m="right">Destra</button><button data-m="mid">Medio</button><button data-m="trap">Trapezi</button>
+              </div>
+            </div>
+          </div>
+          <div class="card pad"><h3>Risultati</h3><dl class="readout" id="out-integ"></dl></div>
+        </div>
+      </div>
+      <div class="card pad mt theory-box">
+        <h3>L'integrale come area</h3>
+        <p>Dividiamo \([a, b]\) in \(n\) parti di ampiezza \(\Delta x = \frac{b-a}{n}\) e sommiamo le aree dei rettangoli. Aumentando \(n\) la somma si avvicina all'<b>integrale definito</b>. Le parti sotto l'asse \(x\) contano con segno negativo.</p>
+        <div class="formula">$$\int_a^b f(x)\,dx = \lim_{n\to\infty}\sum_{i=1}^{n} f(x_i)\,\Delta x \qquad \int_a^b f(x)\,dx = F(b) - F(a)$$</div>
+        <a href="teoria.html#integrali">Approfondisci nella teoria →</a>
+      </div>
+    </section>
+
+    <!-- PARABOLA -->
+    <section data-panel="parabola">
+      <div class="lab">
+        <div class="card stage"><canvas id="c-parab" aria-label="Grafico della parabola"></canvas></div>
+        <div class="side">
+          <div class="card pad">
+            <h3>Coefficienti di ax² + bx + c</h3>
+            <div id="ctl-parab"></div>
+          </div>
+          <div class="card pad"><h3>Analisi</h3><dl class="readout" id="out-parab"></dl></div>
+        </div>
+      </div>
+      <div class="card pad mt theory-box">
+        <h3>Risoluzione passo per passo</h3>
+        <div id="parab-steps"></div>
+        <a href="teoria.html#secondo-grado">Approfondisci nella teoria →</a>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">AppMate · Laboratorio di Matematica</footer>
+  <script src="assets/common.js"></script>
+  <script src="assets/parser.js"></script>
+  <script src="assets/plot.js"></script>
+  <script src="assets/mathlab.js"></script>
+</body>
+</html>

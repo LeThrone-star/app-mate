@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AppMate · Matematica e Fisica</title>
+  <meta name="description" content="Grafici di funzioni, calcolatrice scientifica, laboratori interattivi e teoria di matematica e fisica.">
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .hero { display: grid; grid-template-columns: 1.1fr 1fr; gap: 32px; align-items: center; padding: 32px 0 40px; }
+    .hero h1 { font-size: clamp(2.1rem, 5vw, 3.4rem); letter-spacing: -.03em; line-height: 1.05; margin-bottom: 16px; }
+    .hero h1 .m { color: var(--math); }
+    .hero h1 .f { color: var(--phys); }
+    .hero p { font-size: 1.12rem; color: var(--muted); max-width: 52ch; }
+    .hero .btn { padding: 11px 18px; font-size: 1rem; }
+    .hero-canvas { height: 320px; padding: 0; overflow: hidden; }
+    .hero-canvas canvas { width: 100%; height: 100%; display: block; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(205px, 1fr)); gap: 16px; }
+    .feature { padding: 20px; text-decoration: none; color: var(--text); display: flex; flex-direction: column; gap: 8px; transition: transform .15s, box-shadow .15s; }
+    .feature:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(20,30,60,.08), 0 10px 28px rgba(20,30,60,.12); }
+    .feature .ico { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 1.35rem; font-weight: 800; }
+    .feature .ico.math { background: var(--math-soft); color: var(--math); }
+    .feature .ico.phys { background: var(--phys-soft); color: var(--phys); }
+    .feature h3 { margin: 4px 0 0; font-size: 1.15rem; }
+    .feature p { color: var(--muted); margin: 0; font-size: .95rem; }
+    .feature ul { margin: 4px 0 0; padding-left: 18px; color: var(--muted); font-size: .9rem; }
+    .section-title { font-size: 1.4rem; margin: 40px 0 16px; letter-spacing: -.01em; }
+    .quick { display: flex; flex-wrap: wrap; gap: 8px; }
+    .quick a { text-decoration: none; }
+    @media (max-width: 860px) { .hero { grid-template-columns: 1fr; } .hero-canvas { height: 240px; } }
+  </style>
+</head>
+<body>
+  <header class="site-header"></header>
+  <main class="container">
+    <section class="hero">
+      <div>
+        <h1><span class="m">Matematica</span> e <span class="f">Fisica</span>, da vedere e da toccare.</h1>
+        <p>Disegna funzioni come su una calcolatrice grafica, fai calcoli scientifici, sperimenta con leve, pendoli e proiettili e ripassa la teoria con esempi e quiz. Tutto nel browser, gratis.</p>
+        <div class="btn-row mt">
+          <a class="btn primary" href="grafici.html">Apri i grafici</a>
+          <a class="btn phys" href="fisica.html">Laboratorio di fisica</a>
+          <a class="btn" href="teoria.html">Teoria</a>
+        </div>
+      </div>
+      <div class="card hero-canvas"><canvas id="hero" aria-hidden="true"></canvas></div>
+    </section>
+
+    <h2 class="section-title">Strumenti</h2>
+    <div class="grid">
+      <a class="card feature" href="grafici.html">
+        <span class="ico math">ƒ</span>
+        <h3>Grafici</h3>
+        <p>Calcolatrice grafica: scrivi le espressioni e guardale prendere forma.</p>
+        <ul><li>funzioni, curve implicite e disequazioni</li><li>slider animabili e punti trascinabili</li><li>zeri, massimi, minimi e intersezioni</li></ul>
+      </a>
+      <a class="card feature" href="calcolatrice.html">
+        <span class="ico math">±</span>
+        <h3>Calcolatrice</h3>
+        <p>Scientifica, con cronologia, variabili, frazioni, gradi e radianti.</p>
+        <ul><li>trigonometria, logaritmi, potenze</li><li>fattoriali e combinazioni</li><li>il risultato precedente con Ans</li></ul>
+      </a>
+      <a class="card feature" href="matematica.html">
+        <span class="ico math">∫</span>
+        <h3>Laboratorio di Matematica</h3>
+        <p>Concetti che diventano visibili muovendo uno slider.</p>
+        <ul><li>circonferenza goniometrica</li><li>derivata e retta tangente</li><li>integrali e somme di Riemann</li><li>equazioni di 2° grado passo per passo</li></ul>
+      </a>
+      <a class="card feature" href="fisica.html">
+        <span class="ico phys">⚖</span>
+        <h3>Laboratorio di Fisica</h3>
+        <p>Simulazioni con misure in tempo reale e oggetti da trascinare.</p>
+        <ul><li>leve dei tre generi</li><li>piano inclinato con attrito</li><li>moto parabolico su Terra, Luna, Marte</li><li>pendolo e molla con energia</li></ul>
+      </a>
+      <a class="card feature" href="teoria.html">
+        <span class="ico math">📖</span>
+        <h3>Teoria</h3>
+        <p>Le formule che contano, spiegate con esempi e verificate con un quiz.</p>
+        <ul><li>funzioni, trigonometria, derivate, integrali</li><li>cinematica, dinamica, energia, leve</li><li>link diretti a grafici e simulazioni</li></ul>
+      </a>
+    </div>
+
+    <h2 class="section-title">Inizia da qui</h2>
+    <div class="quick">
+      <a class="btn small" data-graph='["y = a(x - h)^2 + k","a = 1","h = 0","k = -2"]'>Parabola con slider</a>
+      <a class="btn small" data-graph='["(x - a)^2 + (y - b)^2 = r^2","a = 0","b = 0","r = 3","(a, b)"]'>Circonferenza trascinabile</a>
+      <a class="btn small" data-graph='["f(x) = sin(x) + x/2","a = 1","y = f&#39;(a)(x - a) + f(a)","(a, f(a))"]'>Retta tangente</a>
+      <a class="btn small" href="fisica.html#leve">Equilibra una leva</a>
+      <a class="btn small" href="fisica.html#proiettile">Spara un proiettile sulla Luna</a>
+      <a class="btn small" href="matematica.html#goniometria">Seno e coseno</a>
+      <a class="btn small" href="teoria.html#derivate">Ripassa le derivate</a>
+    </div>
+  </main>
+  <footer class="site-footer">AppMate · Matematica e Fisica interattive</footer>
+  <script src="assets/common.js"></script>
+  <script src="assets/plot.js"></script>
+  <script>
+    (function () {
+      const t0 = performance.now();
+      const plot = new Plot(document.getElementById('hero'), {
+        interactive: false, gridTarget: 70, fixedView: () => [-7, 7, -4, 4],
+        onDraw: (ctx, p) => {
+          const t = (performance.now() - t0) / 1000;
+          p.drawFunction(x => 2 * Math.sin(x - t), '#1c7ed6', 3);
+          p.drawFunction(x => 0.12 * x * x * x - x - 0.5 + Math.sin(t * 0.7), '#e03131', 3);
+          const x0 = 2.2 * Math.sin(t * 0.5);
+          const y0 = 0.12 * x0 ** 3 - x0 - 0.5 + Math.sin(t * 0.7), m = 0.36 * x0 * x0 - 1;
+          p.infiniteLine(x0, y0, m, '#2f9e44', 2, [6, 5]);
+          p.point(x0, y0, '#2f9e44', 6);
+          // proiettile
+          const T = (t % 3) / 3 * 2.6;
+          p.point(-6 + 5.2 * T, -3.5 + 6 * T - 2.3 * T * T, '#f08c00', 7);
+          p.request();
+        },
+      });
+    })();
+  </script>
+</body>
+</html>

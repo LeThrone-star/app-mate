@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Laboratorio di Fisica · AppMate</title>
+  <meta name="description" content="Simulazioni interattive: leve, piano inclinato, moto parabolico, pendolo e molla.">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site-header"></header>
+  <main class="container phys-lab">
+    <span class="tag phys">Laboratorio</span>
+    <h1 class="page-title">Laboratorio di Fisica</h1>
+    <p class="page-sub">Cambia i parametri, trascina gli oggetti e osserva cosa succede. Ogni esperimento mostra le misure in tempo reale e le formule che lo descrivono.</p>
+
+    <div class="tabs phys" id="tabs">
+      <button data-tab="leve">Leve</button>
+      <button data-tab="piano">Piano inclinato</button>
+      <button data-tab="proiettile">Moto parabolico</button>
+      <button data-tab="pendolo">Pendolo</button>
+      <button data-tab="molla">Molla</button>
+    </div>
+
+    <!-- LEVE -->
+    <section data-panel="leve">
+      <div class="lab">
+        <div class="card stage"><canvas id="c-leve" aria-label="Simulazione della leva"></canvas></div>
+        <div class="side">
+          <div class="card pad">
+            <h3>Parametri</h3>
+            <div id="ctl-leve"></div>
+            <div class="btn-row mt">
+              <button class="btn phys small" id="leve-eq">Trova l'equilibrio</button>
+            </div>
+            <div class="btn-row mt">
+              <button class="btn small" data-preset="1">1° genere</button>
+              <button class="btn small" data-preset="2">2° genere</button>
+              <button class="btn small" data-preset="3">3° genere</button>
+            </div>
+            <p class="hint mt" style="margin-bottom:0">Puoi trascinare il fulcro, il peso e la freccia della forza direttamente sul disegno.</p>
+          </div>
+          <div class="card pad">
+            <h3>Misure</h3>
+            <div class="status" id="leve-status"></div>
+            <dl class="readout mt" id="out-leve"></dl>
+          </div>
+        </div>
+      </div>
+      <div class="card pad mt theory-box">
+        <h3>Come funziona una leva</h3>
+        <p>Una leva è un'asta rigida che può ruotare attorno a un punto fisso, il <b>fulcro</b>. Su di essa agiscono la <b>forza motrice</b> \(F\) (quella che applichiamo) e la <b>forza resistente</b> \(R\) (il peso da sollevare). La distanza di ciascuna forza dal fulcro si chiama <b>braccio</b>.</p>
+        <div class="formula">$$M = F \cdot b \qquad\qquad \text{equilibrio:}\; F \cdot b_F = R \cdot b_R \qquad\qquad V = \frac{b_F}{b_R}$$</div>
+        <p><b>1° genere</b>: il fulcro sta tra le due forze (altalena, forbici, tenaglie). <b>2° genere</b>: la resistenza sta tra fulcro e forza motrice (carriola, schiaccianoci) — sempre vantaggiosa. <b>3° genere</b>: la forza motrice sta in mezzo (pinzetta, canna da pesca, avambraccio) — sempre svantaggiosa. Se \(V &gt; 1\) la leva è <b>vantaggiosa</b>, se \(V &lt; 1\) è <b>svantaggiosa</b>, se \(V = 1\) è <b>indifferente</b>.</p>
+        <a href="teoria.html#leve">Approfondisci nella teoria →</a>
+      </div>
+    </section>
+
+    <!-- PIANO INCLINATO -->
+    <section data-panel="piano">
+      <div class="lab">
+        <div class="card stage"><canvas id="c-piano" aria-label="Simulazione del piano inclinato"></canvas></div>
+        <div class="side">
+          <div class="card pad">
+            <h3>Parametri</h3>
+            <div id="ctl-piano"></div>
+            <div class="btn-row mt">
+              <button class="btn phys small" id="piano-go">▶ Avvia</button>
+              <button class="btn small" id="piano-reset">↺ Ripristina</button>
+            </div>
+          </div>
+          <div class="card pad">
+            <h3>Misure</h3>
+            <div class="status" id="piano-status"></div>
+            <dl class="readout mt" id="out-piano"></dl>
+          </div>
+        </div>
+      </div>
+      <div class="card pad mt theory-box">
+        <h3>Le forze sul piano inclinato</h3>
+        <p>Il peso \(P = mg\) si scompone in una componente <b>parallela</b> al piano, che tende a far scendere il corpo, e una <b>perpendicolare</b>, bilanciata dalla reazione vincolare \(N\). L'attrito si oppone al moto.</p>
+        <div class="formula">$$P_\parallel = mg\sin\alpha \qquad P_\perp = N = mg\cos\alpha \qquad F_{att} = \mu N \qquad a = g(\sin\alpha - \mu_d\cos\alpha)$$</div>
+        <p>Il corpo parte da fermo solo se \(\tan\alpha &gt; \mu_s\): l'angolo \(\alpha_{lim} = \arctan\mu_s\) si chiama <b>angolo limite</b>.</p>
+        <a href="teoria.html#piano-inclinato">Approfondisci nella teoria →</a>
+      </div>
+    </section>
+
+    <!-- PROIETTILE -->
+    <section data-panel="proiettile">
+      <div class="lab">
+        <div class="card stage"><canvas id="c-proiettile" aria-label="Simulazione del moto parabolico"></canvas></div>
+        <div class="side">
+          <div class="card pad">
+            <h3>Parametri</h3>
+            <div id="ctl-proiettile"></div>
+            <div class="ctrl">
+              <label><span>Gravità</span></label>
+              <div class="seg" id="proj-g">
+                <button data-g="9.81" class="active">Terra</button><button data-g="1.62">Luna</button><button data-g="3.71">Marte</button><button data-g="24.79">Giove</button>
+              </div>
+            </div>
+            <div class="btn-row mt">
+              <button class="btn phys small" id="proj-fire">🚀 Lancia</button>
+              <button class="btn small" id="proj-clear">Cancella tracce</button>
+            </div>
+            <label class="hint mt" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="proj-vec" checked> Mostra i vettori velocità</label>
+          </div>
+          <div class="card pad">
+            <h3>Misure</h3>
+            <dl class="readout" id="out-proiettile"></dl>
+          </div>
+        </div>
+      </div>
+      <div class="card pad mt theory-box">
+        <h3>Il moto parabolico</h3>
+        <p>Il moto si scompone in due moti indipendenti: <b>rettilineo uniforme</b> in orizzontale e <b>uniformemente accelerato</b> in verticale. La traiettoria è una parabola.</p>
+        <div class="formula">$$x = v_0\cos\theta\; t \qquad y = h_0 + v_0\sin\theta\; t - \tfrac12 g t^2 \qquad G_{(h_0=0)} = \frac{v_0^2\sin 2\theta}{g} \qquad h_{max} = h_0 + \frac{(v_0\sin\theta)^2}{2g}$$</div>
+        <p>Da terra (\(h_0 = 0\)) la gittata massima si ottiene a \(45^\circ\), e angoli complementari (es. 30° e 60°) danno la stessa gittata. Provalo!</p>
+        <a href="teoria.html#moto-parabolico">Approfondisci nella teoria →</a>
+      </div>
+    </section>
+
+    <!-- PENDOLO -->
+    <section data-panel="pendolo">
+      <div class="lab">
+        <div class="card stage"><canvas id="c-pendolo" aria-label="Simulazione del pendolo"></canvas></div>
+        <div class="side">
+          <div class="card pad">
+            <h3>Parametri</h3>
+            <div id="ctl-pendolo"></div>
+            <div class="ctrl">
+              <label><span>Gravità</span></label>
+              <div class="seg" id="pend-g">
+                <button data-g="9.81" class="active">Terra</button><button data-g="1.62">Luna</button><button data-g="3.71">Marte</button><button data-g="24.79">Giove</button>
+              </div>
+            </div>
+            <div class="btn-row mt">
+              <button class="btn phys small" id="pend-play">❚❚ Pausa</button>
+              <button class="btn small" id="pend-reset">↺ Ripristina</button>
+            </div>
+            <p class="hint mt" style="margin-bottom:0">Trascina la massa per cambiare l'angolo di partenza.</p>
+          </div>
+          <div class="card pad">
+            <h3>Misure</h3>
+            <dl class="readout" id="out-pendolo"></dl>
+          </div>
+        </div>
+      </div>
+      <div class="card pad mt theory-box">
+        <h3>Il pendolo semplice</h3>
+        <p>Per piccole oscillazioni (\(\theta \lesssim 15^\circ\)) il periodo non dipende né dalla massa né dall'ampiezza (<b>isocronismo</b>, scoperto da Galileo). Per ampiezze grandi il periodo reale diventa più lungo: confronta le due misure!</p>
+        <div class="formula">$$T \approx 2\pi\sqrt{\frac{L}{g}} \qquad E = \tfrac12 m v^2 + mgL(1-\cos\theta) = \text{costante}$$</div>
+        <a href="teoria.html#oscillazioni">Approfondisci nella teoria →</a>
+      </div>
+    </section>
+
+    <!-- MOLLA -->
+    <section data-panel="molla">
+      <div class="lab">
+        <div class="card stage"><canvas id="c-molla" aria-label="Simulazione massa-molla"></canvas></div>
+        <div class="side">
+          <div class="card pad">
+            <h3>Parametri</h3>
+            <div id="ctl-molla"></div>
+            <div class="btn-row mt">
+              <button class="btn phys small" id="molla-play">❚❚ Pausa</button>
+              <button class="btn small" id="molla-reset">↺ Ripristina</button>
+            </div>
+            <p class="hint mt" style="margin-bottom:0">Trascina il blocco per allungare o comprimere la molla.</p>
+          </div>
+          <div class="card pad">
+            <h3>Misure</h3>
+            <dl class="readout" id="out-molla"></dl>
+          </div>
+        </div>
+      </div>
+      <div class="card pad mt theory-box">
+        <h3>Legge di Hooke e moto armonico</h3>
+        <p>Una molla deformata di \(x\) esercita una forza di richiamo proporzionale alla deformazione e opposta a essa. Il corpo attaccato oscilla di <b>moto armonico</b>; l'energia passa continuamente da elastica a cinetica.</p>
+        <div class="formula">$$F = -kx \qquad T = 2\pi\sqrt{\frac{m}{k}} \qquad x(t) = A\cos(\omega t) \qquad E = \tfrac12 kx^2 + \tfrac12 mv^2$$</div>
+        <a href="teoria.html#oscillazioni">Approfondisci nella teoria →</a>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">AppMate · Laboratorio di Fisica</footer>
+  <script src="assets/common.js"></script>
+  <script src="assets/physics.js"></script>
+</body>
+</html>
