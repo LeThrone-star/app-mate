@@ -267,6 +267,7 @@
     r.max = r.sl.querySelector('.max');
     r.play = r.sl.querySelector('.play');
     r.input.value = e.text;
+    if (window.MathKeypad) window.MathKeypad.syncInput(r.input);
 
     r.input.addEventListener('input', () => { e.text = r.input.value; update(); });
     r.input.addEventListener('focus', () => {
@@ -794,25 +795,15 @@
   });
 
   // tastiera matematica
-  document.getElementById('keypad').addEventListener('mousedown', ev => ev.preventDefault());
-  document.getElementById('keypad').addEventListener('click', ev => {
-    const b = ev.target.closest('button[data-ins]');
-    if (!b) return;
-    let input = lastInput;
-    if (!input || !document.body.contains(input)) {
-      const r = rows.get(exprs[exprs.length - 1].id); input = r.input;
-    }
-    const ins = b.dataset.ins;
-    const s = input.selectionStart != null ? input.selectionStart : input.value.length;
-    const en = input.selectionEnd != null ? input.selectionEnd : s;
-    input.focus();
-    input.setRangeText(ins, s, en, 'end');
-    if (ins.endsWith('()')) { const p = input.selectionStart - 1; input.setSelectionRange(p, p); }
-    input.dispatchEvent(new Event('input'));
+  window.MathKeypad.init({
+    getInput() {
+      if (lastInput && document.body.contains(lastInput)) return lastInput;
+      const r = rows.get(exprs[exprs.length - 1].id);
+      return r ? r.input : null;
+    },
   });
-  document.getElementById('toggle-keypad').addEventListener('click', () => {
-    document.getElementById('keypad').classList.toggle('hidden');
-  });
+  document.getElementById('toggle-keypad').addEventListener('click', () => window.MathKeypad.toggle());
+  document.getElementById('kp-fab').addEventListener('click', () => window.MathKeypad.toggle());
 
   /* ---------- Persistenza nell'URL ---------- */
   function saveHash() {
