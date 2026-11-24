@@ -18,7 +18,15 @@ python3 -m http.server 8000
 # poi apri http://localhost:8000
 ```
 
-Si può pubblicare così com'è su GitHub Pages (Settings → Pages → branch e cartella `/`).
+## Pubblicazione e Google
+
+Indirizzo pubblico previsto: **https://lethrone-star.github.io/app-mate/**
+
+1. Su GitHub: *Settings → Pages → Build and deployment → Source: Deploy from a branch*, scegli il branch con il sito e la cartella `/ (root)`, poi *Save*. Dopo 1–2 minuti il sito è online.
+2. Su [Google Search Console](https://search.google.com/search-console): *Aggiungi proprietà → Prefisso URL* con l'indirizzo qui sopra e verifica la proprietà (metodo "Tag HTML": il tag va aggiunto nella `<head>` di `index.html`).
+3. In Search Console, *Sitemap* → invia `sitemap.xml`; in *Controllo URL* puoi chiedere l'indicizzazione della home.
+
+Ogni pagina ha già titolo, descrizione, link canonico e anteprima per la condivisione (Open Graph). Se rinomini il repository o usi un dominio tuo, aggiorna gli indirizzi in `sitemap.xml` e nei tag `canonical`/`og:url`.
 
 ## Struttura
 
