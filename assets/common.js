@@ -25,8 +25,7 @@
   }
   function isDark() {
     const t = document.documentElement.dataset.theme;
-    if (t) return t === 'dark';
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return t !== 'light'; // il tema predefinito di Astral è quello notturno
   }
   applyTheme(storedTheme());
   if (window.matchMedia) {

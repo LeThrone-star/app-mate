@@ -23,6 +23,9 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap">
   <link rel="stylesheet" href="assets/style.css">
   <style>
     .hero { display: grid; grid-template-columns: 1.1fr 1fr; gap: 32px; align-items: center; padding: 32px 0 40px; }
@@ -94,10 +97,13 @@
     .thumb img { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; display: block; border: 1px solid var(--border); }
     .thumb button { position: absolute; top: -6px; right: -6px; width: 22px; height: 22px; border-radius: 50%; border: 0; background: var(--text); color: var(--surface); cursor: pointer; line-height: 1; }
     .compose-row { display: flex; gap: 6px; align-items: flex-end; }
-    #tutor-text { flex: 1; min-width: 0; resize: none; border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; background: var(--surface-2); font: inherit; line-height: 1.4; max-height: 180px; }
+    #tutor-text { flex: 1; min-width: 0; resize: none; min-height: 64px; border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; background: var(--surface-2); font: inherit; line-height: 1.4; max-height: 180px; }
     #tutor-text:focus { outline: 2px solid var(--math); outline-offset: 0; }
     .compose-row .btn { height: 42px; flex: none; }
     .tutor-photo { font-size: 1.15rem; padding: 0 12px; }
+    .compose-tools { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+    #tutor-mic.on { background: var(--bad); border-color: var(--bad); color: #fff; }
+    #tutor-partial { font-style: italic; }
     #tutor-note .btn { margin-left: 4px; vertical-align: middle; }
     #tutor-note { font-size: .86rem; color: var(--muted); padding: 8px 16px; background: var(--surface-2); border-top: 1px solid var(--border); }
     .tutor.off #tutor-note { color: var(--text); }
@@ -167,12 +173,18 @@
         <div id="tutor-note" hidden></div>
         <div class="tutor-compose">
           <div id="tutor-previews" hidden></div>
+          <div class="compose-tools">
+            <button class="btn small" id="tutor-guide" type="button" title="Inserisce uno schema da completare">📝 Guida per descrivere l'esercizio</button>
+            <button class="btn small" id="tutor-mic" type="button" hidden aria-pressed="false">🎤 Detta</button>
+            <span class="hint" id="tutor-mic-hint">Sul telefono puoi anche dettare con il microfono 🎤 della tastiera.</span>
+          </div>
+          <div id="tutor-partial" class="hint" hidden></div>
           <div class="compose-row">
             <button class="btn tutor-photo" id="tutor-cam-btn" type="button" title="Scatta una foto" aria-label="Scatta una foto">📷</button>
             <button class="btn tutor-photo" id="tutor-gal-btn" type="button" title="Carica un'immagine" aria-label="Carica un'immagine">🖼</button>
             <input type="file" id="tutor-cam" accept="image/*" capture="environment" hidden>
             <input type="file" id="tutor-gal" accept="image/*,.heic,.heif" multiple hidden>
-            <textarea id="tutor-text" rows="1" placeholder="Scrivi il problema o una domanda…" aria-label="Domanda per il tutor"></textarea>
+            <textarea id="tutor-text" rows="2" placeholder="Descrivi l'esercizio: la traccia, i dati e cosa chiede. Oppure fai una domanda…" aria-label="Descrivi l'esercizio o fai una domanda"></textarea>
             <button class="btn primary" id="tutor-send" type="button">Invia</button>
             <button class="btn" id="tutor-stop" type="button" hidden>■ Ferma</button>
           </div>

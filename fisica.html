@@ -23,8 +23,16 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Astral">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap">
   <link rel="stylesheet" href="assets/style.css">
   <style>
+    .tabs { flex-direction: column; gap: 8px; }
+    .tab-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .tab-label { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); min-width: 150px; }
+    @media (max-width: 640px) { .tab-label { min-width: 0; width: 100%; } .tabs button { padding: 6px 12px; font-size: .9rem; } }
+    select { width: 100%; padding: 8px 10px; border-radius: 9px; border: 1px solid var(--border); background: var(--surface-2); }
     .unit-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: -4px 0 16px; font-size: .92rem; color: var(--muted); }
   </style>
 </head>
@@ -33,7 +41,7 @@
   <main class="container phys-lab">
     <span class="tag phys">Laboratorio</span>
     <h1 class="page-title">Laboratorio di Fisica</h1>
-    <p class="page-sub">Cambia i parametri, trascina gli oggetti e osserva cosa succede. Ogni esperimento mostra le misure in tempo reale e le formule che lo descrivono.</p>
+    <p class="page-sub">Quindici esperimenti che coprono il programma di fisica del liceo: meccanica, onde, fluidi, calore, ottica ed elettricità. Cambia i parametri, trascina gli oggetti e guarda le misure in tempo reale.</p>
 
     <div class="tabs phys" id="tabs">
       <button data-tab="leve">Leve</button>
@@ -212,6 +220,8 @@
   </main>
   <footer class="site-footer">Astral · Laboratorio di Fisica</footer>
   <script src="assets/common.js"></script>
+  <script src="assets/plot.js"></script>
   <script src="assets/physics.js"></script>
+  <script src="assets/physics2.js"></script>
 </body>
 </html>

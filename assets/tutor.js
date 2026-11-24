@@ -83,6 +83,55 @@ Regole:
     setAvailable(true, '');
   }).catch(() => offerClaude('Il tutor IA non è disponibile in questo momento.'));
 
+
+  /* ---------- Descrivere l'esercizio: guida e dettatura ---------- */
+  const GUIDE = 'Materia: \nTesto dell\'esercizio: \nDati: \nCosa chiede: \nDove mi blocco: ';
+  $('tutor-guide').addEventListener('click', () => {
+    if (box.disabled) return;
+    if (!box.value.trim()) box.value = GUIDE;
+    else if (!box.value.includes('Testo dell\'esercizio:')) box.value = box.value.trim() + '\n\n' + GUIDE;
+    autosize();
+    box.focus();
+    const i = box.value.indexOf('Materia: ') + 9;
+    box.setSelectionRange(i, i);
+  });
+  const micBtn = $('tutor-mic'), partialEl = $('tutor-partial'), micHint = $('tutor-mic-hint');
+  let dict = null;
+  function appendSpoken(t) {
+    t = (t || '').trim();
+    if (!t) return;
+    const v = box.value;
+    const sep = !v || /\s$/.test(v) ? '' : ' ';
+    box.value = v + sep + t;
+    autosize();
+  }
+  window.claude.use('dictation').then(d => {
+    if (!d) return;
+    dict = d;
+    micBtn.hidden = false;
+    micHint.hidden = true;
+    d.onPartial(({ text }) => { partialEl.textContent = text ? '🎤 ' + text : ''; partialEl.hidden = !text; });
+    d.onFinal(({ text }) => { appendSpoken(text); });
+    d.onState(({ state, reason }) => {
+      const on = state !== 'idle';
+      micBtn.classList.toggle('on', on);
+      micBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      micBtn.textContent = state === 'listening' ? '■ Stop dettatura' : state === 'starting' ? '🎤 Attendo…' : '🎤 Detta';
+      if (!on) { partialEl.hidden = true; partialEl.textContent = ''; }
+      if (!on && reason === 'unavailable') { micBtn.hidden = true; micHint.hidden = false; }
+      if (!on && reason === 'not_granted') showToast('La dettatura è stata negata: puoi riattivarla dal menu Autorizzazioni della pagina.');
+      if (!on && (reason === 'rate_limited' || reason === 'upstream_error')) showToast('Il microfono non ha funzionato. Riprova tra poco.');
+    });
+  }).catch(() => { /* niente dettatura: resta la tastiera */ });
+  micBtn.addEventListener('click', () => {
+    if (!dict) return;
+    if (dict.active()) { dict.stop().catch(() => {}); return; }
+    dict.start().catch(e => {
+      if (e && e.code === 'unavailable') { micBtn.hidden = true; micHint.hidden = false; }
+      else if (e && e.code === 'not_granted') showToast('Per dettare serve il permesso del microfono.');
+    });
+  });
+
   /* ---------- Foto ---------- */
   const MAX_SIDE = 1800;
   const looksLikeImage = f => (f.type && f.type.startsWith('image/')) || /\.(jpe?g|png|webp|gif|heic|heif|bmp)$/i.test(f.name || '');
@@ -219,7 +268,9 @@ Regole:
 
   async function send(textOverride) {
     if (!sample || busy || preparing > 0) return;
-    const text = (textOverride != null ? textOverride : box.value).trim();
+    if (dict && dict.active()) await dict.stop().catch(() => {});
+    let text = (textOverride != null ? textOverride : box.value).trim();
+    if (text.replace(/^(Materia|Testo dell'esercizio|Dati|Cosa chiede|Dove mi blocco):\s*$/gm, '').trim() === '') text = '';
     const pics = images.slice();
     if (!text && !pics.length) { box.focus(); return; }
     const mode = document.querySelector('input[name="tutor-mode"]:checked').value;

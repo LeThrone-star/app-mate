@@ -866,14 +866,6 @@
     sims.molla = { step, st };
   })();
 
-  /* ---------- Ciclo principale ---------- */
-  App.setupTabs(document.getElementById('tabs'), name => { active = name; });
-  let last = performance.now();
-  function frame(t) {
-    const dt = Math.min(0.05, (t - last) / 1000);
-    last = t;
-    if (active && sims[active] && sims[active].st.w > 0 && sims[active].st.h > 0) sims[active].step(dt);
-    requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
+  /* ---------- Strumenti condivisi con le altre simulazioni (physics2.js) ---------- */
+  window.PhysKit = { sims, COL, DEG, readout, clear, text, ground, segButtons, canvasPos, stripChart, energyBars, massSlider, massLabel };
 })();

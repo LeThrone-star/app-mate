@@ -2,7 +2,7 @@
    Le pagine vengono salvate sul dispositivo: si aprono subito dalla copia
    salvata e intanto si scarica in sottofondo la versione nuova.
    Cambia VERSION a ogni aggiornamento del sito. */
-const VERSION = 'astral-v3';
+const VERSION = 'astral-v4';
 const CORE = [
   './', 'index.html', 'grafici.html', 'calcolatrice.html', 'matematica.html', 'fisica.html', 'teoria.html',
   'manifest.webmanifest',
@@ -29,7 +29,8 @@ self.addEventListener('fetch', event => {
   const url = new URL(req.url);
   const sameOrigin = url.origin === self.location.origin;
   const katex = url.hostname === 'cdn.jsdelivr.net' && url.pathname.startsWith('/npm/katex@');
-  if (!sameOrigin && !katex) return;
+  const fonts = url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com';
+  if (!sameOrigin && !katex && !fonts) return;
 
   event.respondWith(caches.open(VERSION).then(async cache => {
     const cached = await cache.match(req, { ignoreSearch: sameOrigin });
