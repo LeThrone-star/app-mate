@@ -84,7 +84,7 @@
     open = v;
     root.classList.toggle('hidden', !open);
     document.body.classList.toggle('kp-open', open);
-    try { localStorage.setItem('appmate-keypad', open ? '1' : '0'); } catch (e) { /* ignora */ }
+    try { localStorage.setItem('astral-keypad', open ? '1' : '0'); } catch (e) { /* ignora */ }
     syncAll();
     if (opts.onToggle) opts.onToggle(open);
     window.dispatchEvent(new Event('resize'));
@@ -146,7 +146,7 @@
       act(a);
     });
     let saved = null;
-    try { saved = localStorage.getItem('appmate-keypad'); } catch (e) { /* ignora */ }
+    try { saved = localStorage.getItem('astral-keypad'); } catch (e) { /* ignora */ }
     setOpen(saved === null ? true : saved === '1');
   }
 

@@ -1,5 +1,5 @@
 /* =========================================================
-   AppMate — utilità condivise: header, tema, canvas, slider, tab
+   Astral — utilità condivise: header, tema, canvas, slider, tab
    ========================================================= */
 (function () {
   'use strict';
@@ -15,7 +15,7 @@
 
   /* ---------- Tema ---------- */
   function storedTheme() {
-    try { return localStorage.getItem('appmate-theme'); } catch (e) { return null; }
+    try { return localStorage.getItem('astral-theme'); } catch (e) { return null; }
   }
   function applyTheme(t) {
     if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
@@ -43,7 +43,7 @@
       `<a href="${href}" class="${cls || ''} ${here === href ? 'active' : ''}">${label}</a>`).join('');
     header.innerHTML = `
       <div class="inner">
-        <a class="brand" href="index.html"><span class="logo">∑</span><span>App<span class="plus">Mate</span></span></a>
+        <a class="brand" href="index.html"><span class="logo">✦</span><span>Astral</span></a>
         <nav class="nav" id="site-nav">${links}</nav>
         <button class="icon-btn menu-btn" aria-label="Menu" id="menu-btn">☰</button>
         <button class="icon-btn" aria-label="Cambia tema" id="theme-btn" title="Tema chiaro/scuro"></button>
@@ -54,7 +54,7 @@
     window.addEventListener('themechange', setIcon);
     themeBtn.addEventListener('click', () => {
       const next = isDark() ? 'light' : 'dark';
-      try { localStorage.setItem('appmate-theme', next); } catch (e) { /* ignora */ }
+      try { localStorage.setItem('astral-theme', next); } catch (e) { /* ignora */ }
       applyTheme(next);
     });
     header.querySelector('#menu-btn').addEventListener('click', () => {

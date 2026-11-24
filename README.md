@@ -1,4 +1,4 @@
-# AppMate · Matematica e Fisica interattive
+# Astral · Matematica e Fisica interattive
 
 Sito statico (HTML, CSS e JavaScript, senza build) che unisce matematica e fisica:
 
