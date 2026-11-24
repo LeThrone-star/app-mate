@@ -44,7 +44,7 @@
       `<a href="${href}" class="${cls || ''} ${here === href ? 'active' : ''}">${label}</a>`).join('');
     header.innerHTML = `
       <div class="inner">
-        <a class="brand" href="index.html"><span class="logo">✦</span><span>Astral</span></a>
+        <a class="brand" href="index.html"><img class="logo" src="assets/favicon.svg" alt="" width="32" height="32"><span>Astral</span></a>
         <nav class="nav" id="site-nav">${links}</nav>
         <button class="btn small primary install-btn" id="install-btn" type="button" hidden>⬇ Installa l'app</button>
         <button class="icon-btn menu-btn" aria-label="Menu" id="menu-btn">☰</button>

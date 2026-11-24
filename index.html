@@ -12,7 +12,7 @@
   <meta property="og:title" content="Astral · Matematica e Fisica interattive">
   <meta property="og:description" content="Grafici di funzioni, calcolatrice scientifica, laboratori interattivi e teoria di matematica e fisica.">
   <meta property="og:url" content="https://lethrone-star.github.io/app-mate/">
-  <meta name="theme-color" content="#2463eb">
+  <meta name="theme-color" content="#0d1b4c">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
@@ -63,7 +63,7 @@
     .tutor.drag { outline: 3px dashed var(--math); outline-offset: 4px; }
     .tutor-main { display: flex; flex-direction: column; min-width: 0; border-right: 1px solid var(--border); }
     .tutor-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
-    .tutor-head .ai { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--math), var(--phys)); color: #fff; display: grid; place-items: center; font-weight: 800; flex: none; }
+    .tutor-head .ai { width: 36px; height: 36px; border-radius: 10px; flex: none; display: block; }
     .tutor-head h2 { font-size: 1.1rem; margin: 0; }
     .tutor-head p { margin: 0; font-size: .85rem; color: var(--muted); }
     .tutor-head .btn { margin-left: auto; }
@@ -147,7 +147,7 @@
     <section class="card tutor" id="tutor" aria-label="Tutor IA">
       <div class="tutor-main">
         <div class="tutor-head">
-          <span class="ai">✦</span>
+          <img class="ai" src="assets/favicon.svg" alt="" width="36" height="36">
           <div><h2>Il tuo tutor di matematica e fisica</h2><p>Fotografa l'esercizio o scrivilo: ti aiuto a risolverlo.</p></div>
           <button class="btn small" id="tutor-new" type="button" title="Nuova conversazione">Nuova<span class="lbl"> conversazione</span></button>
         </div>

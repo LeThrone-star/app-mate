@@ -107,11 +107,7 @@ kbd {
   font-weight: 800; font-size: 1.15rem; color: var(--text); text-decoration: none;
   letter-spacing: -.01em; white-space: nowrap;
 }
-.brand .logo {
-  width: 32px; height: 32px; border-radius: 9px;
-  background: linear-gradient(135deg, var(--math), var(--phys));
-  display: grid; place-items: center; color: #fff; font-size: 1rem; font-weight: 800;
-}
+.brand .logo { width: 34px; height: 34px; border-radius: 9px; display: block; flex: none; }
 .brand span.plus { color: var(--phys); }
 .nav { display: flex; gap: 4px; margin-left: auto; align-items: center; }
 .nav a {
