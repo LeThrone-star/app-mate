@@ -97,6 +97,59 @@
     });
   }
 
+
+  /* ---------- Massa in kg oppure peso in N ---------- */
+  const G0 = 9.81;
+  let massUnit = 'kg';
+  try { if (localStorage.getItem('astral-massunit') === 'N') massUnit = 'N'; } catch (e) { /* ignora */ }
+  const massCtls = [];
+  function massLabel(m) {
+    if (massUnit === 'kg') return fmtNum(m, m < 10 && !Number.isInteger(m) ? 1 : 0) + ' kg';
+    const P = m * G0;
+    return fmtNum(P, P < 10 ? 1 : 0) + ' N';
+  }
+  /** Slider che lavora in kg, ma può mostrare e chiedere il peso in newton. */
+  function massSlider(parent, o) {
+    const box = document.createElement('div');
+    parent.appendChild(box);
+    let m = o.value, sl = null;
+    const snap = (v, st) => Math.round(v / st) * st;
+    function build() {
+      box.innerHTML = '';
+      if (massUnit === 'kg') {
+        m = Math.min(o.max, Math.max(o.min, snap(m, o.step)));
+        sl = slider(box, { label: o.label, min: o.min, max: o.max, step: o.step, value: m, unit: 'kg', decimals: o.step < 1 ? 1 : 0, onInput: v => { m = v; o.onInput(m); } });
+      } else {
+        const st = o.stepN, mn = Math.max(st, snap(o.min * G0, st)), mx = snap(o.max * G0, st);
+        const P = Math.min(mx, Math.max(mn, snap(m * G0, st)));
+        m = P / G0;
+        sl = slider(box, { label: o.wLabel, min: mn, max: mx, step: st, value: P, unit: 'N', decimals: st < 1 ? 1 : 0, onInput: v => { m = v / G0; o.onInput(m); } });
+      }
+      o.onInput(m);
+    }
+    build();
+    const ctl = {
+      rebuild: build,
+      get value() { return m; },
+      set value(v) { m = v; build(); },
+    };
+    massCtls.push(ctl);
+    return ctl;
+  }
+  (function unitSwitch() {
+    const el = document.getElementById('mass-unit');
+    if (!el) return;
+    const paint = () => el.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.u === massUnit));
+    paint();
+    el.addEventListener('click', ev => {
+      const b = ev.target.closest('button'); if (!b || b.dataset.u === massUnit) return;
+      massUnit = b.dataset.u;
+      try { localStorage.setItem('astral-massunit', massUnit); } catch (e) { /* ignora */ }
+      paint();
+      massCtls.forEach(c => c.rebuild());
+    });
+  })();
+
   /* =====================================================
      1. LEVE
      ===================================================== */
@@ -112,7 +165,7 @@
     const set = (k, v) => { s[k] = v; };
     sl.f = slider(ctl, { label: 'Posizione del fulcro', min: 0, max: 10, step: 0.1, value: s.f, unit: 'm', decimals: 1, onInput: v => set('f', v) });
     sl.xR = slider(ctl, { label: 'Posizione della resistenza', min: 0, max: 10, step: 0.1, value: s.xR, unit: 'm', decimals: 1, onInput: v => set('xR', v) });
-    sl.mR = slider(ctl, { label: 'Massa della resistenza', min: 1, max: 100, step: 1, value: s.mR, unit: 'kg', decimals: 0, onInput: v => set('mR', v) });
+    sl.mR = massSlider(ctl, { label: 'Massa della resistenza', wLabel: 'Peso della resistenza R', min: 1, max: 100, step: 1, stepN: 1, value: s.mR, onInput: v => set('mR', v) });
     sl.xP = slider(ctl, { label: 'Posizione della forza motrice', min: 0, max: 10, step: 0.1, value: s.xP, unit: 'm', decimals: 1, onInput: v => set('xP', v) });
     sl.F = slider(ctl, { label: 'Forza motrice F', min: 0, max: 2000, step: 1, value: s.F, unit: 'N', decimals: 0, onInput: v => set('F', v) });
     const sync = () => { for (const k in sl) sl[k].value = s[k]; };
@@ -265,7 +318,7 @@
       ctx.beginPath();
       if (ctx.roundRect) ctx.roundRect(-bs / 2, -bs, bs, bs, 4); else ctx.rect(-bs / 2, -bs, bs, bs);
       ctx.fill(); ctx.stroke();
-      text(ctx, s.mR + ' kg', 0, -bs / 2, { align: 'center', color: '#fff', size: 12 });
+      text(ctx, massLabel(s.mR), 0, -bs / 2, { align: 'center', color: '#fff', size: 12 });
       ctx.restore();
       const cR = beamPt(G, s.xR, -8);
       const lenR = 25 + Math.min(60, c.R / 15);
@@ -315,7 +368,7 @@
     const sl = {};
     const reset = () => { s.pos = 0; s.v = 0; s.t = 0; s.running = false; s.done = false; goBtn.textContent = '▶ Avvia'; };
     sl.a = slider(ctl, { label: 'Inclinazione α', min: 0, max: 60, step: 1, value: s.a, unit: '°', decimals: 0, onInput: v => { s.a = v; reset(); } });
-    sl.m = slider(ctl, { label: 'Massa m', min: 1, max: 50, step: 1, value: s.m, unit: 'kg', decimals: 0, onInput: v => { s.m = v; } });
+    sl.m = massSlider(ctl, { label: 'Massa m', wLabel: 'Peso P', min: 1, max: 50, step: 1, stepN: 1, value: s.m, onInput: v => { s.m = v; } });
     sl.mus = slider(ctl, { label: 'Attrito statico μs', min: 0, max: 1, step: 0.01, value: s.mus, decimals: 2, onInput: v => { s.mus = v; if (s.mud > v) { s.mud = v; sl.mud.value = v; } } });
     sl.mud = slider(ctl, { label: 'Attrito dinamico μd', min: 0, max: 1, step: 0.01, value: s.mud, decimals: 2, onInput: v => { s.mud = v; if (v > s.mus) { s.mus = v; sl.mus.value = v; } } });
     const goBtn = document.getElementById('piano-go');
@@ -368,7 +421,7 @@
       const ctx = clear(st);
       const a = F.a;
       const pad = 40;
-      const scale = Math.min((st.w - 2 * pad - 60) / (L * Math.cos(a)), (st.h - 120) / (L * Math.max(0.01, Math.sin(a))), (st.w - 2 * pad) / 3.2);
+      const scale = Math.min((st.w - 2 * pad - 60) / (L * Math.cos(a)), (st.h - 230) / (L * Math.max(0.01, Math.sin(a))), (st.w - 2 * pad) / 3.2);
       const gy = st.h - 40;
       const Bx = pad + 20 + L * Math.cos(a) * scale;
       const A = { x: pad + 20, y: gy - L * Math.sin(a) * scale };
@@ -398,7 +451,7 @@
       ctx.fillRect(-size / 2, -size / 2, size, size);
       ctx.globalAlpha = 1;
       ctx.strokeStyle = '#0b4f91'; ctx.lineWidth = 1.5; ctx.strokeRect(-size / 2, -size / 2, size, size);
-      text(ctx, s.m + ' kg', 0, 0, { align: 'center', color: '#fff', size: 12 });
+      text(ctx, massLabel(s.m), 0, 0, { align: 'center', color: '#fff', size: 12 });
       ctx.restore();
 
       // vettori forza
@@ -581,7 +634,7 @@
     const reset = () => { s.th = s.th0 * DEG; s.om = 0; s.t = 0; s.data = []; s.lastCross = null; s.Tmeas = null; };
     slider(ctl, { label: 'Lunghezza L', min: 0.2, max: 3, step: 0.05, value: s.L, unit: 'm', decimals: 2, onInput: v => { s.L = v; s.Tmeas = null; s.lastCross = null; } });
     const thSl = slider(ctl, { label: 'Angolo iniziale θ₀', min: 5, max: 170, step: 1, value: s.th0, unit: '°', decimals: 0, onInput: v => { s.th0 = v; reset(); } });
-    slider(ctl, { label: 'Massa m', min: 0.1, max: 5, step: 0.1, value: s.m, unit: 'kg', decimals: 1, onInput: v => { s.m = v; } });
+    massSlider(ctl, { label: 'Massa m', wLabel: 'Peso P (sulla Terra)', min: 0.1, max: 5, step: 0.1, stepN: 0.1, value: s.m, onInput: v => { s.m = v; } });
     slider(ctl, { label: 'Smorzamento (attrito dell\'aria)', min: 0, max: 0.5, step: 0.01, value: s.b, unit: '1/s', decimals: 2, onInput: v => { s.b = v; } });
     segButtons('pend-g', b => { s.g = +b.dataset.g; s.Tmeas = null; s.lastCross = null; });
     playBtn.addEventListener('click', () => { s.running = !s.running; playBtn.textContent = s.running ? '❚❚ Pausa' : '▶ Avvia'; });
@@ -703,7 +756,7 @@
     const playBtn = document.getElementById('molla-play');
     const reset = () => { s.x = s.A; s.v = 0; s.t = 0; s.data = []; };
     slider(ctl, { label: 'Costante elastica k', min: 5, max: 200, step: 1, value: s.k, unit: 'N/m', decimals: 0, onInput: v => { s.k = v; } });
-    slider(ctl, { label: 'Massa m', min: 0.2, max: 5, step: 0.1, value: s.m, unit: 'kg', decimals: 1, onInput: v => { s.m = v; } });
+    massSlider(ctl, { label: 'Massa m', wLabel: 'Peso P (sulla Terra)', min: 0.2, max: 5, step: 0.1, stepN: 0.1, value: s.m, onInput: v => { s.m = v; } });
     const aSl = slider(ctl, { label: 'Allungamento iniziale', min: -0.5, max: 0.5, step: 0.01, value: s.A, unit: 'm', decimals: 2, onInput: v => { s.A = v; reset(); } });
     slider(ctl, { label: 'Smorzamento b', min: 0, max: 3, step: 0.05, value: s.b, unit: 'kg/s', decimals: 2, onInput: v => { s.b = v; } });
     playBtn.addEventListener('click', () => { s.running = !s.running; playBtn.textContent = s.running ? '❚❚ Pausa' : '▶ Avvia'; });
@@ -779,7 +832,7 @@
       // blocco
       ctx.fillStyle = COL.blue;
       ctx.fillRect(bx - bw / 2, G.floorY - bh, bw, bh);
-      text(ctx, s.m + ' kg', bx, G.floorY - bh / 2, { align: 'center', color: '#fff', size: 12 });
+      text(ctx, massLabel(s.m), bx, G.floorY - bh / 2, { align: 'center', color: '#fff', size: 12 });
       // forza elastica
       const F = -s.k * s.x;
       if (Math.abs(F) > 0.05) {

@@ -18,6 +18,9 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .unit-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: -4px 0 16px; font-size: .92rem; color: var(--muted); }
+  </style>
 </head>
 <body>
   <header class="site-header"></header>
@@ -32,6 +35,13 @@
       <button data-tab="proiettile">Moto parabolico</button>
       <button data-tab="pendolo">Pendolo</button>
       <button data-tab="molla">Molla</button>
+    </div>
+    <div class="unit-row">
+      <span>Indica i corpi con la</span>
+      <div class="seg" id="mass-unit" role="group" aria-label="Unità per i corpi">
+        <button data-u="kg">massa (kg)</button><button data-u="N">forza peso (N)</button>
+      </div>
+      <span class="hint">P = m · g, con g = 9,81 m/s²</span>
     </div>
 
     <!-- LEVE -->
