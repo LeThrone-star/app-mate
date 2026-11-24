@@ -46,6 +46,7 @@
       <div class="inner">
         <a class="brand" href="index.html"><span class="logo">✦</span><span>Astral</span></a>
         <nav class="nav" id="site-nav">${links}</nav>
+        <button class="btn small primary install-btn" id="install-btn" type="button" hidden>⬇ Installa l'app</button>
         <button class="icon-btn menu-btn" aria-label="Menu" id="menu-btn">☰</button>
         <button class="icon-btn" aria-label="Cambia tema" id="theme-btn" title="Tema chiaro/scuro"></button>
       </div>`;
@@ -206,6 +207,48 @@
     ctx.restore();
   }
 
+
+  /* ---------- App installabile (PWA) ---------- */
+  const App_ = { prompt: null, listeners: [] };
+  const isStandalone = () => (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+  const isIOS = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const inFrame = () => { try { return window.top !== window.self; } catch (e) { return true; } };
+  function notifyInstall() { App_.listeners.forEach(f => { try { f(); } catch (e) { /* ignora */ } }); }
+  if ('serviceWorker' in navigator && window.isSecureContext && !inFrame()) {
+    window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => { /* non disponibile qui */ }); });
+  }
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    App_.prompt = e;
+    const b = document.getElementById('install-btn');
+    if (b) b.hidden = false;
+    notifyInstall();
+  });
+  window.addEventListener('appinstalled', () => {
+    App_.prompt = null;
+    const b = document.getElementById('install-btn');
+    if (b) b.hidden = true;
+    notifyInstall();
+  });
+  async function installApp() {
+    if (!App_.prompt) return false;
+    const p = App_.prompt;
+    App_.prompt = null;
+    p.prompt();
+    try { await p.userChoice; } catch (e) { /* ignora */ }
+    const b = document.getElementById('install-btn');
+    if (b) b.hidden = true;
+    notifyInstall();
+    return true;
+  }
+  document.addEventListener('click', ev => { if (ev.target.closest('#install-btn')) installApp(); });
+  const pwa = {
+    install: installApp,
+    canPrompt: () => !!App_.prompt,
+    isStandalone, isIOS, inFrame,
+    onChange: f => App_.listeners.push(f),
+  };
+
   document.addEventListener('DOMContentLoaded', () => {
     buildHeader();
     document.querySelectorAll('[data-graph]').forEach(a => {
@@ -214,5 +257,5 @@
   });
   window.addEventListener('load', () => renderMath());
 
-  window.App = { cssVar, fitCanvas, slider, fmtNum, setupTabs, renderMath, tex, graphHref, arrow, isDark };
+  window.App = { pwa, cssVar, fitCanvas, slider, fmtNum, setupTabs, renderMath, tex, graphHref, arrow, isDark };
 })();

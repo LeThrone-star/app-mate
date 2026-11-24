@@ -14,6 +14,12 @@
   <meta property="og:url" content="https://lethrone-star.github.io/app-mate/">
   <meta name="theme-color" content="#2463eb">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Astral">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
@@ -40,6 +46,18 @@
     .quick { display: flex; flex-wrap: wrap; gap: 8px; }
     .quick a { text-decoration: none; }
     @media (max-width: 860px) { .hero { grid-template-columns: 1fr; } .hero-canvas { height: 240px; } }
+    /* App */
+    .app-box { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 20px; align-items: center; padding: 22px; scroll-margin-top: 80px; }
+    .app-box > img { width: 96px; height: 96px; border-radius: 22px; box-shadow: var(--shadow); }
+    .app-box h2 { margin: 0 0 4px; font-size: 1.3rem; }
+    .app-box p { margin: 0 0 10px; color: var(--muted); }
+    .app-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 6px; }
+    .app-steps > div { background: var(--surface-2); border-radius: 12px; padding: 12px 14px; font-size: .92rem; }
+    .app-steps b { display: block; margin-bottom: 4px; }
+    .app-steps ol { margin: 0; padding-left: 18px; }
+    .app-status { font-weight: 650; }
+    .app-status.good { color: var(--good); }
+    @media (max-width: 560px) { .app-box { grid-template-columns: 1fr; text-align: left; } .app-box > img { width: 72px; height: 72px; border-radius: 16px; } }
     /* Tutor IA */
     .tutor { display: grid; grid-template-columns: minmax(0, 1fr) 270px; gap: 0; overflow: hidden; scroll-margin-top: 80px; }
     .tutor.drag { outline: 3px dashed var(--math); outline-offset: 4px; }
@@ -118,8 +136,8 @@
         <div class="btn-row mt">
           <a class="btn primary" href="#tutor">📷 Chiedi al tutor IA</a>
           <a class="btn" href="grafici.html">Apri i grafici</a>
+          <a class="btn" href="#app">📱 Scarica l'app</a>
           <a class="btn phys" href="fisica.html">Laboratorio di fisica</a>
-          <a class="btn" href="teoria.html">Teoria</a>
         </div>
       </div>
       <div class="card hero-canvas"><canvas id="hero" aria-hidden="true"></canvas></div>
@@ -212,6 +230,22 @@
       </a>
     </div>
 
+    <h2 class="section-title">L'app di Astral</h2>
+    <section class="card app-box" id="app">
+      <img src="assets/icons/icon-192.png" alt="Icona dell'app Astral" width="96" height="96">
+      <div>
+        <h2>Astral sul tuo telefono</h2>
+        <p>Installala sulla schermata Home: si apre a schermo intero come un'app e funziona anche senza internet. Gratis, senza passare dagli store.</p>
+        <p class="app-status" id="app-status"></p>
+        <div class="btn-row" id="app-install-row" hidden><button class="btn primary" id="app-install" type="button">⬇ Installa Astral</button></div>
+        <div class="app-steps" id="app-steps">
+          <div><b>📱 Android (Chrome)</b><ol><li>Apri Astral nel browser Chrome.</li><li>Premi il pulsante <b style="display:inline">Installa l'app</b> in alto, oppure il menu ⋮ → <i>Installa app</i>.</li><li>Conferma: l'icona compare tra le tue app.</li></ol></div>
+          <div><b>🍎 iPhone e iPad (Safari)</b><ol><li>Apri Astral in Safari.</li><li>Tocca il tasto Condividi (il quadrato con la freccia ⬆).</li><li>Scegli <i>Aggiungi alla schermata Home</i>, poi <i>Aggiungi</i>.</li></ol></div>
+          <div><b>💻 Computer (Chrome o Edge)</b><ol><li>Apri Astral nel browser.</li><li>Clicca l'icona di installazione nella barra degli indirizzi, o il pulsante <b style="display:inline">Installa l'app</b> in alto.</li></ol></div>
+        </div>
+      </div>
+    </section>
+
     <h2 class="section-title">Inizia da qui</h2>
     <div class="quick">
       <a class="btn small" data-graph='["y = a(x - h)^2 + k","a = 1","h = 0","k = -2"]'>Parabola con slider</a>
@@ -227,6 +261,33 @@
   <script src="assets/common.js"></script>
   <script src="assets/plot.js"></script>
   <script src="assets/tutor.js"></script>
+  <script>
+    (function () {
+      const pwa = App.pwa, status = document.getElementById('app-status');
+      const row = document.getElementById('app-install-row'), steps = document.getElementById('app-steps');
+      const SITE = 'https://lethrone-star.github.io/app-mate/';
+      function paint() {
+        status.className = 'app-status';
+        if (pwa.isStandalone()) {
+          status.textContent = '✓ Stai già usando l\'app Astral.'; status.classList.add('good');
+          row.hidden = true; steps.hidden = true; return;
+        }
+        if (pwa.inFrame()) {
+          status.textContent = 'Da questa anteprima non si può installare: apri il sito pubblico ' + SITE + ' sul telefono e segui i passi qui sotto.';
+        } else if (pwa.canPrompt()) {
+          status.textContent = 'Il tuo dispositivo può installare Astral con un tocco:';
+        } else if (pwa.isIOS()) {
+          status.textContent = 'Su iPhone l\'installazione si fa da Safari, così:';
+        } else {
+          status.textContent = '';
+        }
+        row.hidden = !pwa.canPrompt();
+      }
+      document.getElementById('app-install').addEventListener('click', () => pwa.install());
+      pwa.onChange(paint);
+      paint();
+    })();
+  </script>
   <script>
     (function () {
       const t0 = performance.now();

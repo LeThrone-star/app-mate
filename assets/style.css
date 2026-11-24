@@ -128,9 +128,12 @@ kbd {
 }
 .icon-btn:hover { background: var(--surface-2); }
 .menu-btn { display: none; }
+.install-btn { flex: none; margin-left: 8px; }
 
 @media (max-width: 900px) {
   .menu-btn { display: grid; margin-left: auto; }
+  .install-btn { margin-left: auto; padding: 6px 10px; }
+  .install-btn:not([hidden]) + .menu-btn { margin-left: 0; }
   .nav {
     display: none; position: absolute; top: 100%; left: 0; right: 0;
     flex-direction: column; align-items: stretch; padding: 8px 16px 16px;
