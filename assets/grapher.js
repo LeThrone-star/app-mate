@@ -790,7 +790,7 @@
     saveHash();
     const btn = ev.currentTarget;
     try { await navigator.clipboard.writeText(location.href); btn.textContent = 'Link copiato ✓'; }
-    catch (e) { btn.textContent = 'Copia dalla barra degli indirizzi'; }
+    catch (e) { btn.textContent = 'Copia l\'URL'; }
     setTimeout(() => { btn.textContent = 'Condividi'; }, 2000);
   });
 
