@@ -135,7 +135,33 @@
   }
 
   /* ---------- KaTeX ---------- */
+  /** Divide "$$a \qquad b$$" nelle singole formule (solo fuori dalle graffe). */
+  function splitFormulas(src) {
+    const parts = [];
+    let depth = 0, last = 0;
+    for (let i = 0; i < src.length; i++) {
+      const c = src[i];
+      if (c === '{') depth++;
+      else if (c === '}') depth--;
+      else if (depth === 0 && src.startsWith('\\qquad', i) && !/[A-Za-z]/.test(src[i + 6] || '')) {
+        parts.push(src.slice(last, i));
+        i += 5;
+        last = i + 1;
+      }
+    }
+    parts.push(src.slice(last));
+    return parts.map(p => p.trim()).filter(Boolean);
+  }
   function renderMath(root) {
+    // sugli schermi stretti le formule affiancate vanno una sotto l'altra
+    if (window.innerWidth < 700) {
+      (root || document).querySelectorAll('.formula').forEach(el => {
+        const m = /^\s*\$\$([\s\S]*)\$\$\s*$/.exec(el.textContent);
+        if (!m) return;
+        const parts = splitFormulas(m[1]);
+        if (parts.length > 1) el.textContent = parts.map(p => '$$' + p + '$$').join('\n');
+      });
+    }
     if (window.renderMathInElement) {
       window.renderMathInElement(root || document.body, {
         delimiters: [
