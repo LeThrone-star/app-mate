@@ -2,12 +2,12 @@
    Le pagine vengono salvate sul dispositivo: si aprono subito dalla copia
    salvata e intanto si scarica in sottofondo la versione nuova.
    Cambia VERSION a ogni aggiornamento del sito. */
-const VERSION = 'astral-v4';
+const VERSION = 'astral-v5';
 const CORE = [
   './', 'index.html', 'grafici.html', 'calcolatrice.html', 'matematica.html', 'fisica.html', 'teoria.html',
   'manifest.webmanifest',
   'assets/style.css', 'assets/common.js', 'assets/parser.js', 'assets/plot.js', 'assets/keypad.js',
-  'assets/grapher.js', 'assets/calc.js', 'assets/mathlab.js', 'assets/physics.js', 'assets/tutor.js',
+  'assets/grapher.js', 'assets/calc.js', 'assets/mathlab.js', 'assets/mathlab2.js', 'assets/physics.js', 'assets/physics2.js', 'assets/tutor.js',
   'assets/favicon.svg', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/apple-touch-icon.png',
 ];
 
